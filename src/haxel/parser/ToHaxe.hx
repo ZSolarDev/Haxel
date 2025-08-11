@@ -1,11 +1,18 @@
 package src.haxel.parser;
 
+using StringTools;
+
 class ToHaxe {
 	public static function convertVariable(variableDeclaration:String = 'float uno = 1.0;'):String {
-		var splitSpaces = variableDeclaration.split(' ');
+		var splitSpaces = variableDeclaration.replace(';', '').split(' ');
 
 		var var_type:String = splitSpaces[0].split('<')[0];
-		var var_array_otherside:String = splitSpaces[0].split('<')[1] ?? '';
+		var var_array_otherside:String;
+		try {
+			var_array_otherside = splitSpaces[0].split('<')[1].substring(0, splitSpaces[0].split('<')[1].length - 1) ?? '';
+		} catch(e) {
+			var_array_otherside = 'Null<$e>';
+		}
 
 		switch (var_array_otherside.toLowerCase()) {
 			// https://tenor.com/view/springtrap-fire-fnaf-gif-2873982408042466685
@@ -35,8 +42,8 @@ class ToHaxe {
 		}
 
 		var var_name:String = splitSpaces[1];
-		var var_value:String = splitSpaces[3] ?? '';
+		var var_value:String = (variableDeclaration.replace(';', '').split(' = ')[1]) ?? '';
 
-		return 'var ${var_name}:${var_type}${var_value != '' ? ' = ${var_value}' : ''}';
+		return 'var ${var_name}:${var_type}${var_value != '' ? ' = ${var_value}' : ''};';
 	}
 }
