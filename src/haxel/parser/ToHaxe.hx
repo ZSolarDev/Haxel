@@ -6,44 +6,25 @@ class ToHaxe {
 	public static function convertVariable(variableDeclaration:String = 'float uno = 1.0;'):String {
 		var splitSpaces = variableDeclaration.replace(';', '').split(' ');
 
-		var var_type:String = splitSpaces[0].split('<')[0];
-		var var_array_otherside:String;
-		try {
-			var_array_otherside = splitSpaces[0].split('<')[1].substring(0, splitSpaces[0].split('<')[1].length - 1) ?? '';
-		} catch(e) {
-			var_array_otherside = 'Null<$e>';
-		}
-
-		switch (var_array_otherside.toLowerCase()) {
-			// https://tenor.com/view/springtrap-fire-fnaf-gif-2873982408042466685
-			// case 'array':
-			// 	var_array_otherside = 'Array<${var_array_otherside}>';
-			case 'dynamic':
-				var_array_otherside = 'Dynamic';
-			case 'string':
-				var_array_otherside = 'String';
-			case 'int':
-				var_array_otherside = 'Int';
-			case 'float':
-				var_array_otherside = 'Float';
-		}
-
-		switch (var_type.toLowerCase()) {
-			case 'array':
-				var_type = 'Array<${var_array_otherside}>';
-			case 'dynamic':
-				var_type = 'Dynamic';
-			case 'string':
-				var_type = 'String';
-			case 'int':
-				var_type = 'Int';
-			case 'float':
-				var_type = 'Float';
-		}
+		var var_type:String = splitSpaces[0];
+		var_type = convertTypes(var_type);
 
 		var var_name:String = splitSpaces[1];
 		var var_value:String = (variableDeclaration.replace(';', '').split(' = ')[1]) ?? '';
 
 		return 'var ${var_name}:${var_type}${var_value != '' ? ' = ${var_value}' : ''};';
+	}
+
+	static function convertTypes(type:String = 'array<array<string>>') {
+		var lowerCaseType = type.toLowerCase();
+
+		lowerCaseType = lowerCaseType.replace('float', 'Float');
+		lowerCaseType = lowerCaseType.replace('int', 'Int');
+		lowerCaseType = lowerCaseType.replace('string', 'String');
+		lowerCaseType = lowerCaseType.replace('array', 'Array');
+		lowerCaseType = lowerCaseType.replace('null', 'Null');
+		lowerCaseType = lowerCaseType.replace('dynamic', 'Dynamic');
+
+		return lowerCaseType;
 	}
 }
