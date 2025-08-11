@@ -14,6 +14,7 @@ class Tests {
 		for (test in tests) {
 			Sys.println('haxel: ${test}');
 			Sys.println('haxe: ${ToHaxe.convertVariable(test)}');
+			Sys.println('----------------');
 		}
 	}
 }
