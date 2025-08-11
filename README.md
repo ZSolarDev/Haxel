@@ -11,7 +11,7 @@ Haxel was made to provide ease of use when dealing with compute shaders in haxe.
 ## Is it any different from Haxe syntactically?
 Haxel's syntax is also a bit different from haxe, only in a subtle way. instead of doing something like `var coolFloat:Float = 0;`, Haxel uses `float coolFloat = 0;`. Also instead of `trace`, Haxel uses `print`. These changes were made because I find it simpler defining the variable type to make a variable instead of typing var to state variable declarations.
 
-## How doea a Haxel project compile?
+## How does a Haxel project compile?
 The Haxel compiler essentially converts Haxel to Haxe and runs it through the Haxe compiler to give you your final result.
 
 # TODO: add Haxel demos showcasing compite shader flexibility.
