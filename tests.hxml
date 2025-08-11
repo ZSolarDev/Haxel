@@ -1,2 +1,2 @@
---main src.haxel.Tests
+--main haxel.Tests
 --interp
