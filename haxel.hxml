@@ -1,4 +1,2 @@
---library comma
---library thx.semver
 --main haxel.Haxel
 --interp

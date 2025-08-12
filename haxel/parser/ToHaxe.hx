@@ -1,5 +1,7 @@
 package haxel.parser;
 
+using StringTools;
+
 class ToHaxe {
 	static function convertInlineStructType(typeStr:String):String {
 		var inner = typeStr.trim();
