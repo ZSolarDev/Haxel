@@ -9,7 +9,7 @@
 Haxel was made to provide ease of use when dealing with compute shaders in haxe. I plan to achive this by making my own flexible shading language(hxlsl) based on glsl. You can make shader libraries, import those shader libraries, easily run a compite shader and set and get buffers, etc.
 
 ## Is it any different from Haxe syntactically?
-Haxel's syntax is also a bit different from haxe, only in a subtle way. instead of doing something like `var coolFloat:Float = 0;`, Haxel uses `float coolFloat = 0;`. Also instead of `trace`, Haxel uses `print`. These changes were made because I find it simpler defining the variable type to make a variable instead of typing var to state variable declarations.
+Haxel's syntax is also a bit different from haxe, only in a couple subtle ways. instead of doing something like `var coolFloat:Float = 0;`, Haxel uses `float coolFloat = 0;`. Instead of `trace`, Haxel uses `print`. Finally, instead of doing `var coolVar:{coolInt:Int, coolFloat:Float};`, you would do `{int coolInt; float coolFloat;} coolVar`. These changes were made because I find it simpler defining the variable type to make a variable instead of typing var to state variable declarations; I also like this way of defining dynamic structures, and print makes more sense than trace.
 
 ## How does a Haxel project compile?
 The Haxel compiler essentially converts Haxel to Haxe and runs it through the Haxe compiler to give you your final result.
