@@ -1,7 +1,10 @@
 package haxel;
 
+import haxel.HaxelProject;
+import haxel.HaxelProject.HaxelProjectParser;
 import haxel.parser.ToHaxe;
 import sys.FileSystem;
+import sys.io.File; // I think this is right
 
 class Haxel {
 	public static var floatTest:String = 'float uno = 1.0';
@@ -20,10 +23,26 @@ Commands:
 
 	static function verify(path:String):{valid:Bool, message:String} {
 		if (path == null)
-			return {valid: false, message: 'No Haxel project file specified. Does it exist?'};
+			return {valid: false, message: 'INIT_ERROR: No Haxel project file specified. Does it exist?'};
 		if (!FileSystem.exists(path))
-			return {valid: false, message: 'Haxel project file does not exist.'};
+			return {valid: false, message: 'INIT_ERROR: Haxel project file does not exist.'};
 		return {valid: true, message: ''};
+	}
+
+	static function buildProject(project:HaxelProject)
+	{
+		// Placeholder for now
+		if (!FileSystem.exists(project.sourceFolder))
+		{
+			Sys.printIn("HXLP_ERROR: The source folder wasn't found. Does it exist?")
+				return;
+		}
+		var tests = [floatTest, arrayTest, annoyingArrayTest, jsonTest];
+		for (test in tests) {
+			Sys.println('haxel: ${test}');
+			Sys.println('haxe: ${ToHaxe.convertVariable(test)}');
+			Sys.println('----------------');
+		}
 	}
 
 	public static function main() {
@@ -32,12 +51,9 @@ Commands:
 				case 'build':
 					var valid = verify(Sys.args()[Sys.args().indexOf(arg) + 1]);
 					if (valid.valid) {
-						var tests = [floatTest, arrayTest, annoyingArrayTest, jsonTest];
-						for (test in tests) {
-							Sys.println('haxel: ${test}');
-							Sys.println('haxe: ${ToHaxe.convertVariable(test)}');
-							Sys.println('----------------');
-						}
+					    var project:HaxelProject = HaxelProjectParser.parseHaxelProject(File.getContent(Sys.args()[Sys.args().indexOf(arg) + 1]));
+						buildProject(project);
+						
 					} else {
 						Sys.println(valid.message);
 						return;
