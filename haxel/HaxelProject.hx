@@ -1,3 +1,5 @@
+package haxel;
+
 typedef HaxelProject = {
     var sourceFolder:String;
     var exportFolder:String;

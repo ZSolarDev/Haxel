@@ -1,7 +1,7 @@
 package haxel;
 
-import haxel.HaxelProject;
 import haxel.HaxelProject.HaxelProjectParser;
+import haxel.HaxelProject;
 import haxel.parser.ToHaxe;
 import sys.FileSystem;
 import sys.io.File; // I think this is right
@@ -29,13 +29,11 @@ Commands:
 		return {valid: true, message: ''};
 	}
 
-	static function buildProject(project:HaxelProject)
-	{
+	static function buildProject(project:HaxelProject) {
 		// Placeholder for now
-		if (!FileSystem.exists(project.sourceFolder))
-		{
-			Sys.printIn("HXLP_ERROR: The source folder wasn't found. Does it exist?")
-				return;
+		if (!FileSystem.exists(project.sourceFolder)) {
+			Sys.println("HXLP_ERROR: The source folder wasn't found. Does it exist?");
+			return;
 		}
 		var tests = [floatTest, arrayTest, annoyingArrayTest, jsonTest];
 		for (test in tests) {
@@ -51,9 +49,8 @@ Commands:
 				case 'build':
 					var valid = verify(Sys.args()[Sys.args().indexOf(arg) + 1]);
 					if (valid.valid) {
-					    var project:HaxelProject = HaxelProjectParser.parseHaxelProject(File.getContent(Sys.args()[Sys.args().indexOf(arg) + 1]));
+						var project:HaxelProject = HaxelProjectParser.parseHaxelProject(File.getContent(Sys.args()[Sys.args().indexOf(arg) + 1]));
 						buildProject(project);
-						
 					} else {
 						Sys.println(valid.message);
 						return;
