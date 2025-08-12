@@ -30,18 +30,16 @@ class ToHaxe {
 	}
 
 	public static function convertVariable(variableDeclaration:String = 'float uno = 1.0;'):String {
-		var noSemicolon = variableDeclaration.trim();
-		if (noSemicolon.endsWith(";"))
-			noSemicolon = noSemicolon.substring(0, noSemicolon.length - 1);
+		var trimmedDecl = variableDeclaration.trim();
 
 		var varValue:String = '';
-		if (noSemicolon.contains(' = ')) {
-			var parts = noSemicolon.split(' = ');
-			noSemicolon = parts[0];
+		if (trimmedDecl.contains(' = ')) {
+			var parts = trimmedDecl.split(' = ');
+			trimmedDecl = parts[0];
 			varValue = parts[1];
 		}
 
-		var words = noSemicolon.split(' ');
+		var words = trimmedDecl.split(' ');
 		var varName = words[words.length - 1];
 		var typeStr = words.slice(0, words.length - 1).join(' ');
 
