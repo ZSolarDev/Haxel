@@ -19,6 +19,31 @@ class HXLModule implements IModule {
 	// Placeholder
 	public function execute(data:String):HOutput {
 		var res:HOutput = {success: false, data: ''};
+		for (pattern in patterns) {
+        var pos = 0;
+        while (pos < result.length) {
+            pos = result.indexOf(pattern, pos);
+            if (pos == -1) break; // No more occurrences of pattern
+
+            // Check if the pattern is followed by a space and an alphanumeric string
+            var start = pos + pattern.length;
+            if (start < result.length && result.charAt(start) == ' ') {
+                // Now check if the next part is alphanumeric
+                var end = start + 1;
+                while (end < result.length && (Std.isDigit(result.charAt(end)) || (result.charAt(end) >= 'A' && result.charAt(end) <= 'Z') || (result.charAt(end) >= 'a' && result.charAt(end) <= 'z'))) {
+                    end++;
+                }
+
+                // If we found an alphanumeric string after the space, apply the transformation
+                if (end > start + 1) {
+                    var alphanumericPart = result.substring(start + 1, end);
+                    var transformed = transformAlphanumeric(alphanumericPart);
+                    result = result.substring(0, start + 1) + transformed + result.substring(end);
+                }
+            }
+            pos = start + 1; // Move past the last pattern match to continue searching
+        }
+    }
 		res.success = true;
 		res.data = data;
 		return res;
@@ -31,7 +56,8 @@ class HXLModule implements IModule {
 			var content:String = File.getContent(sourcrFile);
 			
 			// match keyword, space, then capture the following alphanumeric word
-            var regex = ~/\b(?:typedef|enum|class|interface)\s+([A-Za-z0-9]+)/g;
+			// I actually have no idea if this works
+            var regex = ~/\b(?:typedef|enum|class|interface)\s+([A-Za-z0-9<>()]+)/g;
             while (regex.match(content)) {
                 types.push(regex.matched(1)); // captured name
     		}
