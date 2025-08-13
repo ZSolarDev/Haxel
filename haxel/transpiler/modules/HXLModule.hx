@@ -1,13 +1,20 @@
-package haxel.compiler;
+package haxel.transpiler.modules;
 
-using StringTools;
+import haxel.Haxel.HOutput;
 
-class HaxelTranspiler {
-	public static function convertFile(file:String):String {
-		return file;
+class HXLModule implements IModule
+{
+    public function new() {}
+
+    // Placeholder
+    public function execute(data:String):HOutput {
+        var res:HOutput = {success: false, data: ''};
+        res.success = true;
+        res.data = data;
+		return res;
 	}
 
-	static function convertVariableDecl(variableDeclaration:String = 'float uno = 1.0;'):String {
+	public function convertVariableDecl(variableDeclaration:String = 'float uno = 1.0;'):String {
 		var trimmedDecl = variableDeclaration.trim();
 
 		var varValue:String = '';
@@ -29,7 +36,7 @@ class HaxelTranspiler {
 		return 'var ${varName}:${typeStr}${varValue != '' ? ' = ${varValue}' : ''};';
 	}
 
-	static function convertInlineStructType(typeStr:String):String {
+	public function convertInlineStructType(typeStr:String):String {
 		var inner = typeStr.trim();
 		if (inner.startsWith('{') && inner.endsWith('}')) {
 			inner = inner.substring(1, inner.length - 1);
@@ -55,7 +62,7 @@ class HaxelTranspiler {
 		return '{' + convertedFields.join(', ') + '}';
 	}
 
-	static function convertTypes(type:String = 'array<array<string>>') {
+	public function convertTypes(type:String = 'array<array<string>>') {
 		var lowerCaseType = type.toLowerCase();
 
 		lowerCaseType = lowerCaseType.replace('float', 'Float');

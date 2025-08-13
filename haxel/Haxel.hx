@@ -4,7 +4,7 @@ import haxe.io.Path;
 import haxel.HaxelProject;
 import haxel.compiler.HaxelCompiler;
 import sys.FileSystem;
-import sys.io.File; // I think this is right
+import sys.io.File;
 
 typedef HOutput = {
 	var success:Bool;
@@ -54,8 +54,7 @@ Commands:
 			FileSystem.createDirectory(outputPath);
 
 		var result = HaxelCompiler.compileProject(project, sourcePath, outputPath);
-		var resultMessage:String = result.success ? 'HXLCOMPILE_SUCCESS: ${result.data}' : 'HXLCOMPILE_ERROR: ${result.data}';
-		Sys.println(resultMessage);
+		Sys.println(result.data);
 		exit = true;
 	}
 

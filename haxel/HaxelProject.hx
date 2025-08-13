@@ -11,6 +11,7 @@ typedef HaxelProject = {
 	var outputFolder:String;
 	var graphicsEngine:HaxelGraphicsEngine;
 	var copiedFolders:Array<String>;
+	var flixelTargetOverride:String;
 }
 
 class HaxelProjectParser {

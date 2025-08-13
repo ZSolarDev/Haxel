@@ -1,0 +1,13 @@
+package; // Right now its just plain haxe cause the transpilers weren't made yet.
+
+import flixel.FlxGame;
+import openfl.display.Sprite;
+
+class Main extends Sprite
+{
+	public function new()
+	{
+		super();
+		addChild(new FlxGame(0, 0, testPackage.PlayState));
+	}
+}

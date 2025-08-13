@@ -1,26 +1,15 @@
 package haxel.compiler;
 
+import haxel.transpiler.HaxelTranspiler;
 import haxe.io.Path;
 import haxel.Haxel.HOutput;
 import sys.FileSystem;
 import sys.io.File;
 
+// STRING MANIPULATION SUCKS!!!! I HATE IT!! WRITING THIS COMPILER AND THE TRANSPILER WAS TRAUMATIC.
 using StringTools;
 
 class HaxelCompiler {
-	/*
-		public static var floatTest:String = 'float uno = 1.0';
-		public static var arrayTest:String = 'array<string> locales = ["en", "es", "jp"]';
-		public static var annoyingArrayTest:String = 'array<array<array<array<string>>>> annoyance';
-		public static var jsonTest:String = '{int one; float two;} coolJson';
-
-		var tests = [floatTest, arrayTest, annoyingArrayTest, jsonTest];
-		for (test in tests) {
-			Sys.println('haxel: ${test}');
-			Sys.println('haxe: ${HaxelTranspiler.convertVariableDecl(test)}');
-			Sys.println('----------------');
-		}
-	 */
 	public static function compileProject(project:HaxelProject, sourcePath:String, outputPath:String):HOutput {
 		try {
 			var output:HOutput = {success: false, data: ''};
@@ -44,31 +33,47 @@ class HaxelCompiler {
 					var firstLetter = file.charAt(0);
 					if (firstLetter == firstLetter.toLowerCase()) {
 						output.success = false;
-						output.data = 'Haxel source files must begin with an uppercase letter.';
+						output.data = 'HXLTRANSPILER_ERROR: Haxel source files must begin with an uppercase letter.';
 						return output;
 					}
 				}
 			}
 
+			Sys.printIn('All source code has been name validated! Transpiling source code...');
+
 			for (file in sourceFiles) {
-				var transpiled = HaxelTranspiler.convertFile(File.getContent(file));
-				var split = file.split('/');
-				var targetFile = '';
-				var targetPath = '';
-				var srcSplit = sourcePath.split('/');
-				for (i in 0...split.length) {
-					if (srcSplit.indexOf(split[i]) == -1) {
-						if (split[i].contains('.hxl') || split[i].contains('.hxlsl'))
-							targetFile += '${split[i]}${split[i].contains('.hxl') || split[i].contains('.hxlsl') ? '' : '/'}';
-						else {
-							targetFile += '${split[i]}/';
-							targetPath += '${split[i]}/';
+				var transpiled = null;
+				if (file.endsWith('.hxl')){
+					transpiled = HaxelTranspiler.transpile('hxl', file);
+					var split = file.split('/');
+					var targetFile = '';
+					var targetPath = '';
+					var srcSplit = sourcePath.split('/');
+					for (i in 0...split.length) {
+						if (srcSplit.indexOf(split[i]) == -1) {
+							if (split[i].contains('.hxl'))
+								targetFile += split[i];
+							}else {
+								targetFile += '${split[i]}/';
+								targetPath += '${split[i]}/';
+							}
 						}
 					}
+
+					FileSystem.createDirectory('$outputPath/transpiled/source/$targetPath');
+					File.saveContent('$outputPath/transpiled/source/${targetFile.replace('.hxl', '.hx')}', transpiled);
+					Sys.printIn('Transpiled HXL: ${file.split('/')[file.split('/').length - 1].replace('.hxl', '.hx')');
+				}else{
+					if (file.endsWith('.hxlsl')){
+						transpiled = HaexlTranspiler.transpile('hxlsl', file)
+						var shaderPath = '$outputPath/transpiled/__HXL_SHADERS';
+						FileSystem.createDirectory(shaderPath);
+						File.saveContent('$shaderPath/${file.split('/')[file.split('/').length - 1].replace('.hxlsl', '.comp')}', transpiled);
+						Sys.printIn('Transpiled HXLSL: ${file.split('/')[file.split('/').length - 1].replace('.hxlsl', '.comp')');
+					}
 				}
-				FileSystem.createDirectory('$outputPath/transpiled/source/$targetPath');
-				File.saveContent('$outputPath/transpiled/source/$targetFile', transpiled);
 			}
+			Sys.printIn('All source code has been transpiled! Copying folders...');
 
 			for (folder in project.copiedFolders) {
 				var files = recursiveDirRead('./$projectPath/$folder');
@@ -103,11 +108,11 @@ class HaxelCompiler {
 						File.getBytes(('.$file').replace('//', '/')));
 				}
 			}
-			output.success = true;
-			output.data = 'Successfully compiled project to "${outputPath.substr(2, outputPath.length - 2)}/transpiled/${project.graphicsEngine == FLIXEL ? 'export/hl/bin/' : project.graphicsEngine == HAXEL_GRAPHICS_FRAMEWORK ? 'build/' : ''}"';
+			Sys.printIn('Folders copied! Compiling transpiled files...');
+			output = HaxelTranspiledCompiler.compile(project, './${Path.normalize(projectPath)}', '$outputPath/transpiled/');
 			return output;
 		} catch (e) {
-			return {success: false, data: 'Compiler Exception! (TODO: make it fully error proof) || ${e.message} || ${e.stack}'};
+			return {success: false, data: 'HXLTRANSPILER_ERROR: ${e.message} || ${e.stack}'};
 		}
 	}
 
