@@ -25,9 +25,11 @@ Commands:
 
 	static function verify():HOutput {
 		var path:String = '';
-		for (arg in Sys.args())
-			if (FileSystem.exists('.${Path.normalize(arg)}'))
-				path = '.${Path.normalize(arg)}';
+		for (arg in Sys.args()) {
+			var finalArg = '/$arg';
+			if (FileSystem.exists('.${Path.normalize(finalArg)}'))
+				path = '.${Path.normalize(finalArg)}';
+		}
 		if (path == '')
 			return {success: false, data: 'INIT_ERROR: Haxel project file does not exist or has not been specified.'};
 		return {success: true, data: path};
