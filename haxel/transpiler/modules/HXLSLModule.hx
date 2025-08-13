@@ -13,4 +13,6 @@ class HXLSLModule implements IModule
         res.data = data;
 		return res;
 	}
+
+	public function init(codeBase:Array<String>):Void;
 }
