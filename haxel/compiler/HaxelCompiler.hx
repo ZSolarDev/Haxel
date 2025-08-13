@@ -68,6 +68,7 @@ class HaxelCompiler {
 			FileSystem.createDirectory('$outputPath/transpiled/source/$targetPath');
 			File.saveContent('$outputPath/transpiled/source/$targetFile', transpiled);
 		}
+
 		for (folder in project.copiedFolders) {
 			var files = recursiveDirRead('./$projectPath/$folder');
 			for (file in files) {
@@ -97,8 +98,8 @@ class HaxelCompiler {
 				}
 				whyyy = whyyy.replace('//', '/');
 				FileSystem.createDirectory('$outputPath/transpiled/$whyyy');
-				File.saveContent(('$outputPath/transpiled/$whyyy/${file.split('/')[file.split('/').length - 1]}').replace('//', '/'),
-					File.getContent(('.$file').replace('//', '/')));
+				File.saveBytes(('$outputPath/transpiled/$whyyy/${file.split('/')[file.split('/').length - 1]}').replace('//', '/'),
+					File.getBytes(('.$file').replace('//', '/')));
 			}
 		}
 		output.success = true;
