@@ -1,0 +1,9 @@
+{
+    "sourceFolder": "source",
+    "outputFolder": "export",
+    "graphicsEngine": "flixel",
+    "copiedFolders": [
+        "assets",
+        "otherTestCopy"
+    ]
+}

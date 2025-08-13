@@ -1,8 +1,34 @@
-package haxel.parser;
+package haxel.compiler;
 
 using StringTools;
 
-class ToHaxe {
+class HaxelTranspiler {
+	public static function convertFile(file:String):String {
+		return file;
+	}
+
+	static function convertVariableDecl(variableDeclaration:String = 'float uno = 1.0;'):String {
+		var trimmedDecl = variableDeclaration.trim();
+
+		var varValue:String = '';
+		if (trimmedDecl.contains(' = ')) {
+			var parts = trimmedDecl.split(' = ');
+			trimmedDecl = parts[0];
+			varValue = parts[1];
+		}
+
+		var words = trimmedDecl.split(' ');
+		var varName = words[words.length - 1];
+		var typeStr = words.slice(0, words.length - 1).join(' ');
+
+		if (typeStr.startsWith('{'))
+			typeStr = convertInlineStructType(typeStr);
+		else
+			typeStr = convertTypes(typeStr);
+
+		return 'var ${varName}:${typeStr}${varValue != '' ? ' = ${varValue}' : ''};';
+	}
+
 	static function convertInlineStructType(typeStr:String):String {
 		var inner = typeStr.trim();
 		if (inner.startsWith('{') && inner.endsWith('}')) {
@@ -27,28 +53,6 @@ class ToHaxe {
 		});
 
 		return '{' + convertedFields.join(', ') + '}';
-	}
-
-	public static function convertVariable(variableDeclaration:String = 'float uno = 1.0;'):String {
-		var trimmedDecl = variableDeclaration.trim();
-
-		var varValue:String = '';
-		if (trimmedDecl.contains(' = ')) {
-			var parts = trimmedDecl.split(' = ');
-			trimmedDecl = parts[0];
-			varValue = parts[1];
-		}
-
-		var words = trimmedDecl.split(' ');
-		var varName = words[words.length - 1];
-		var typeStr = words.slice(0, words.length - 1).join(' ');
-
-		if (typeStr.startsWith('{'))
-			typeStr = convertInlineStructType(typeStr);
-		else
-			typeStr = convertTypes(typeStr);
-
-		return 'var ${varName}:${typeStr}${varValue != '' ? ' = ${varValue}' : ''};';
 	}
 
 	static function convertTypes(type:String = 'array<array<string>>') {
