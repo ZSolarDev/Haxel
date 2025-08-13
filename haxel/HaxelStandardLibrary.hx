@@ -77,7 +77,7 @@ class HaxelStandardLibrary
         'hxlstd.geom.BasicLine' => '', // also also a polygon
         'hxlstd.geom.AdvancedLine' => '', // also also also a polygon
         'hxlstd.geom.Circle' => '', // ...not a polygon
-        'hxlstd.geom.Collide' => ''
+		'hxlstd.geom.Collide' => '',
 
         /* ---------------- COMPUTE SHADERS --------------- */
         'hxlstd.compute.ComputeShaderInterface' => '',
