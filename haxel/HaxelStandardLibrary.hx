@@ -35,7 +35,7 @@ class HaxelStandardLibrary
         'hxlstd.noise.PerlinNoise' => '',
         'hxlstd.noise.DiamondSquareNoise' => '',
         'hxlstd.noise.SimplexNoise' => '',
-        'hxlstd.noise.WorleyNoise' => ''
+		'hxlstd.noise.WorleyNoise' => '',
 
         /* ---------------      TWEENS      --------------- */
         'hxlstd.tweens.Tween' => '',
