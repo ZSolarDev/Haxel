@@ -1,16 +1,17 @@
 package haxel.transpiler;
 
+import haxel.Haxel.HOutput;
+import haxel.transpiler.modules.*;
+import sys.io.File;
+
 using StringTools;
 
 class HaxelTranspiler {
-	static var modules:Map<String, IModule> = [
-		'hxl' => new HXLModule(),
-		'hxlsl' => new HXLSLModule();
-	];
+	static var modules:Map<String, IModule> = ['hxl' => new HXLModule(), 'hxlsl' => new HXLSLModule()];
 
-	public function getModule(module:String):IModule
+	public static function getModule(module:String):IModule
 		return modules.get(module);
 
-	public function transpile(module:String, file:String):HOutput
-		return getModule(module).execute(File.getContent(file))
+	public static function transpile(module:String, file:String):HOutput
+		return getModule(module).execute(File.getContent(file));
 }

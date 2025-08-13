@@ -1,16 +1,16 @@
 package haxel.compiler;
 
-import haxel.transpiler.HaxelTranspiler;
 import haxe.io.Path;
 import haxel.Haxel.HOutput;
+import haxel.transpiler.HaxelTranspiler;
 import sys.FileSystem;
 import sys.io.File;
 
-// STRING MANIPULATION SUCKS!!!! I HATE IT!! WRITING THIS COMPILER AND THE TRANSPILER WAS TRAUMATIC.
 using StringTools;
 
+// STRING MANIPULATION SUCKS!!!! I HATE IT!! WRITING THIS COMPILER AND THE TRANSPILER WAS TRAUMATIC.
 class HaxelCompiler {
-	public static function compileProject(project:HaxelProject, sourcePath:String, outputPath:String):HOutput {
+	public static function compileProject(project:HaxelProject, sourcePath:String, outputPath:String, test:Bool = false):HOutput {
 		try {
 			var output:HOutput = {success: false, data: ''};
 			sourcePath = sourcePath.substr(2, sourcePath.length - 2);
@@ -39,41 +39,34 @@ class HaxelCompiler {
 				}
 			}
 
-			Sys.printIn('All source code has been name validated! Transpiling source code...');
+			Sys.println('All source code has been name validated! Transpiling source code...');
 
 			for (file in sourceFiles) {
 				var transpiled = null;
-				if (file.endsWith('.hxl')){
+				if (file.endsWith('.hxl')) {
 					transpiled = HaxelTranspiler.transpile('hxl', file);
-					var split = file.split('/');
-					var targetFile = '';
-					var targetPath = '';
-					var srcSplit = sourcePath.split('/');
-					for (i in 0...split.length) {
-						if (srcSplit.indexOf(split[i]) == -1) {
-							if (split[i].contains('.hxl'))
-								targetFile += split[i];
-							}else {
-								targetFile += '${split[i]}/';
-								targetPath += '${split[i]}/';
-							}
-						}
-					}
+					var srcNorm = Path.normalize(sourcePath);
+					if (!srcNorm.endsWith("/"))
+						srcNorm += "/";
 
-					FileSystem.createDirectory('$outputPath/transpiled/source/$targetPath');
-					File.saveContent('$outputPath/transpiled/source/${targetFile.replace('.hxl', '.hx')}', transpiled);
-					Sys.printIn('Transpiled HXL: ${file.split('/')[file.split('/').length - 1].replace('.hxl', '.hx')');
-				}else{
-					if (file.endsWith('.hxlsl')){
-						transpiled = HaexlTranspiler.transpile('hxlsl', file)
+					var relativePath = file.substr(srcNorm.length);
+					var hxPath = relativePath.substr(0, relativePath.length - 4) + ".hx";
+
+					FileSystem.createDirectory(Path.directory('$outputPath/transpiled/source/$hxPath'));
+					File.saveContent('$outputPath/transpiled/source/$hxPath', transpiled.data);
+
+					Sys.println('Transpiled HXL: ${Path.withoutDirectory(hxPath)}');
+				} else {
+					if (file.endsWith('.hxlsl')) {
+						transpiled = HaxelTranspiler.transpile('hxlsl', file);
 						var shaderPath = '$outputPath/transpiled/__HXL_SHADERS';
 						FileSystem.createDirectory(shaderPath);
-						File.saveContent('$shaderPath/${file.split('/')[file.split('/').length - 1].replace('.hxlsl', '.comp')}', transpiled);
-						Sys.printIn('Transpiled HXLSL: ${file.split('/')[file.split('/').length - 1].replace('.hxlsl', '.comp')');
+						File.saveContent('$shaderPath/${file.split('/')[file.split('/').length - 1].replace('.hxlsl', '.comp')}', transpiled.data);
+						Sys.println('Transpiled HXLSL: ${file.split('/')[file.split('/').length - 1].replace('.hxlsl', '.comp')}');
 					}
 				}
 			}
-			Sys.printIn('All source code has been transpiled! Copying folders...');
+			Sys.println('All source code has been transpiled! Copying folders...');
 
 			for (folder in project.copiedFolders) {
 				var files = recursiveDirRead('./$projectPath/$folder');
@@ -108,8 +101,8 @@ class HaxelCompiler {
 						File.getBytes(('.$file').replace('//', '/')));
 				}
 			}
-			Sys.printIn('Folders copied! Compiling transpiled files...');
-			output = HaxelTranspiledCompiler.compile(project, './${Path.normalize(projectPath)}', '$outputPath/transpiled/');
+			Sys.println('Folders copied! Compiling transpiled files...');
+			output = HaxelTranspiledCompiler.compileProject(project, './${Path.normalize(projectPath)}', '$outputPath/transpiled/', outputPath, test);
 			return output;
 		} catch (e) {
 			return {success: false, data: 'HXLTRANSPILER_ERROR: ${e.message} || ${e.stack}'};

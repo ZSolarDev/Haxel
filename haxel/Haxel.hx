@@ -35,7 +35,7 @@ Commands:
 		return {success: true, data: path};
 	}
 
-	static function buildProject(project:HaxelProject, hxlpPath:String) {
+	static function buildProject(project:HaxelProject, hxlpPath:String, test:Bool = false) {
 		// Placeholder for now
 		var realHxlpPath = './';
 		var segments = hxlpPath.split('/');
@@ -53,7 +53,7 @@ Commands:
 		if (!FileSystem.exists(outputPath))
 			FileSystem.createDirectory(outputPath);
 
-		var result = HaxelCompiler.compileProject(project, sourcePath, outputPath);
+		var result = HaxelCompiler.compileProject(project, sourcePath, outputPath, test);
 		Sys.println(result.data);
 		exit = true;
 	}
@@ -66,6 +66,15 @@ Commands:
 					if (valid.success) {
 						var project:HaxelProject = HaxelProjectParser.parseHaxelProject(File.getContent(valid.data));
 						buildProject(project, valid.data);
+					} else {
+						Sys.println(valid.data);
+						return;
+					}
+				case 'test':
+					var valid = verify();
+					if (valid.success) {
+						var project:HaxelProject = HaxelProjectParser.parseHaxelProject(File.getContent(valid.data));
+						buildProject(project, valid.data, true);
 					} else {
 						Sys.println(valid.data);
 						return;
