@@ -5,6 +5,15 @@ import haxel.Haxel.HOutput;
 using StringTools;
 
 class HXLModule implements IModule {
+	public var types:Array<String> = [
+		'float',
+		'int',
+		'string',
+		'bool',
+		'array',
+		'null', // like null<type>
+		'dynamic'
+	];
 	public function new() {}
 
 	// Placeholder
@@ -13,6 +22,20 @@ class HXLModule implements IModule {
 		res.success = true;
 		res.data = data;
 		return res;
+	}
+
+	public function init(codeBase:Array<String>)
+	{
+		for (sourceFile in codeBase)
+		{
+			var content:String = File.getContent(sourcrFile);
+			
+			// match keyword, space, then capture the following alphanumeric word
+            var regex = ~/\b(?:typedef|enum|class|interface)\s+([A-Za-z0-9]+)/g;
+            while (regex.match(content)) {
+                types.push(regex.matched(1)); // captured name
+    		}
+		}
 	}
 
 	public function convertVariableDecl(variableDeclaration:String = 'float uno = 1.0;'):String {
