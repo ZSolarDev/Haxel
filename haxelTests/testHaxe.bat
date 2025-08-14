@@ -1,2 +1,2 @@
-haxe haxel.hxml -D test -D haxelTests/haxelTests/testHaxelHaxeProject/test.hxlp
+haxe haxel.hxml -D test -D haxelTests/testHaxelHaxeProject/test.hxlp
 pause
