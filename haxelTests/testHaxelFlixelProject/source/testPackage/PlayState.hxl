@@ -4,13 +4,13 @@ import flixel.FlxState;
 
 class PlayState extends FlxState
 {
-    public var string test = "string 'int wowie' test (this wont get converted cause it ahs string detection)";
-	override public function create()
+    public string test = "string 'int wowie' test (this wont get converted cause it ahs string detection)";
+	override public void create()
 	{
 		super.create();
 	}
 
-	override public function update(float elapsed)
+	override public void update(float elapsed)
 	{
 		super.update(elapsed);
 	}

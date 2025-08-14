@@ -7,8 +7,28 @@ using StringTools;
 
 // this was worse than the compiler...
 class HXLModule implements IModule {
-	public var types:Array<String> = ['float', 'int', 'string', 'bool', 'array', 'null', // like null<type>
-		'dynamic'];
+	public var types:Array<String> = [
+		'float',
+		'int',
+		'string',
+		'bool',
+		'array',
+		'void',
+		'null', // like null<type>
+		'dynamic'
+	];
+
+	var modifiers = [
+		'public',
+		'private',
+		'protected',
+		'inline',
+		'override',
+		'static',
+		'final',
+		'abstract'
+	];
+
 	public var keyWords = ['extends', 'implements', 'is'];
 
 	public function new() {}
@@ -42,6 +62,20 @@ class HXLModule implements IModule {
 				if (pos == -1)
 					break;
 
+				if (inString(pos, result)) {
+					pos += type.length;
+					continue;
+				}
+
+				var modifier = "";
+				var beforeChunk = result.substring(cast Math.max(0, pos - 20), pos).rtrim();
+				for (m in modifiers) {
+					if (beforeChunk.endsWith(m)) {
+						modifier = m + " ";
+						break;
+					}
+				}
+
 				var start = pos + type.length;
 				if (start < result.length && result.charAt(start) == ' ') {
 					var end = start + 1;
@@ -67,30 +101,45 @@ class HXLModule implements IModule {
 					}
 
 					var alphanumericPart = result.substring(start + 1, end);
-					var declaration:String;
-					var valid = !inString(pos, result);
+					var valid = true;
 
-					if (valid) {
-						for (keyWord in keyWords) {
-							if (alphanumericPart == keyWord) {
-								valid = false;
-								break;
-							}
+					for (keyWord in keyWords) {
+						if (alphanumericPart == keyWord) {
+							valid = false;
+							break;
 						}
 					}
 
+					var insideParams = false;
+					var searchPos = pos;
+					while (searchPos >= 0) {
+						var ch = result.charAt(searchPos);
+						if (ch == ')')
+							break; // we passed the param list
+						if (ch == '(') {
+							insideParams = true;
+							break;
+						}
+						searchPos--;
+					}
+
+					if (insideParams) {
+						result = result.substring(0, pos) + alphanumericPart + ":" + convertTypes(type) + result.substring(pos + (end - pos));
+						pos = start + 1;
+						continue;
+					}
 					if (valid) {
-						if (alphanumericPart.indexOf('(') != -1)
-							declaration = '${alphanumericPart}:${convertTypes(type)}';
-						else
-							declaration = convertVariableDecl('$type $alphanumericPart');
-						result = result.substring(0, pos) + declaration + result.substring(pos + (end - pos));
+						var isFunction = alphanumericPart.indexOf('(') != -1;
+						var declaration:String = isFunction ? '${modifier}function $alphanumericPart:${convertTypes(type)}' : '${modifier}var ${convertVariableDecl(type + ' ' + alphanumericPart)}';
+						var cutStart = modifier != "" ? (pos - modifier.length) : pos;
+						result = result.substring(0, cutStart) + declaration + result.substring(pos + (end - pos));
 					}
 				}
 
 				pos = start + 1;
 			}
 		}
+
 		res.success = true;
 		res.data = result;
 		return res;
@@ -101,7 +150,6 @@ class HXLModule implements IModule {
 			var content:String = File.getContent(sourceFile);
 
 			// match keyword, space, then capture the following alphanumeric word
-			// I actually have no idea if this works
 			var regex = ~/\b(?:typedef|enum|class|interface)\s+([A-Za-z0-9<>()]+)/g;
 			regex.match(content);
 			types.push(regex.matched(1)); // captured name
@@ -165,6 +213,8 @@ class HXLModule implements IModule {
 		lowerCaseType = lowerCaseType.replace('string', 'String');
 		lowerCaseType = lowerCaseType.replace('array', 'Array');
 		lowerCaseType = lowerCaseType.replace('null', 'Null');
+		lowerCaseType = lowerCaseType.replace('bool', 'Bool');
+		lowerCaseType = lowerCaseType.replace('void', 'Void');
 		lowerCaseType = lowerCaseType.replace('dynamic', 'Dynamic');
 
 		return lowerCaseType;
