@@ -9,7 +9,7 @@
 Haxel was made to provide ease of use when dealing with compute shaders in haxe. This is done by coding in my own shading language(hxlsl) based on haxe. It's similar to glsl and hlsl in nature, but the syntax is haxe-based. You can make shader libraries, import those shader libraries in shaders, easily run a compite shader and set and get SSBO's, etc.
 
 ## Is it any different from Haxe syntactically?
-Haxel's syntax is also a bit different from haxe, only in a couple subtle ways. Instead of doing something like `var coolFloat:Float = 0;`, Haxel uses `float coolFloat = 0;`. Instead of `trace`, Haxel uses `print`. Finally, instead of doing `var coolVar:{coolInt:Int, coolFloat:Float};`, you would do `{int coolInt; float coolFloat;} coolVar`. These changes were made because I find it simpler defining the variable type to make a variable instead of typing var to state variable declarations; I also like this way of defining dynamic structures, and print makes more sense than trace.
+Haxel's syntax is also a bit different from haxe, only in a couple subtle ways. Instead of doing something like `var coolFloat:Float = 0;`, Haxel uses `float coolFloat = 0;`. Instead of `trace`, Haxel uses `print`. Finally, instead of doing `var coolVar:{coolInt:Int, coolFloat:Float};`, you would do `var coolVar:{int coolInt, float coolFloat};`. These changes were made because I find it simpler defining the variable type to make a variable instead of typing var to state variable declarations; I also like this way of defining dynamic structures, and print makes more sense than trace.
 
 ## How does a Haxel project compile?
 The Haxel compiler essentially converts Haxel to Haxe and runs it through the Haxe compiler to give you your final result. Basically just `haxel build path/to/project/file.hxlp`.
@@ -23,4 +23,14 @@ Flixel integrates nicely with Haxel, it's basically the same as normal haxe. Pro
 ### Haxel Graphics Framework
 TODO: make this.
 
-# TODO: add Haxel demos showcasing compite shader flexibility.
+## How to use haxelTests?
+For using the tests, inside of this folder(the root folder), run one of these four commands:
+`./haxelTests/testFlixel.bat`
+`./haxelTests/testHaxe.bat`
+`./haxelTests/buildFlixel.bat`
+`./haxelTests/buildHaxe.bat`
+The tests build and run. The builds only build it.
+
+# TODO: add Haxel demos showcasing compite shader flexibility, hxlstd, etc.
+
+# TODO: add Haxel docs as a Wiki section and add a simple demo here.

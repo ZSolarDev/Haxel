@@ -1,67 +1,112 @@
 package haxel.transpiler.modules;
 
 import haxel.Haxel.HOutput;
+import sys.io.File;
 
 using StringTools;
 
+// this was worse than the compiler...
 class HXLModule implements IModule {
-	public var types:Array<String> = [
-		'float',
-		'int',
-		'string',
-		'bool',
-		'array',
-		'null', // like null<type>
-		'dynamic'
-	];
+	public var types:Array<String> = ['float', 'int', 'string', 'bool', 'array', 'null', // like null<type>
+		'dynamic'];
+	public var keyWords = ['extends', 'implements', 'is'];
+
 	public function new() {}
 
-	// Placeholder
+	function inString(pos:Int, code:String):Bool {
+		var inSingle = false;
+		var inDouble = false;
+		for (i in 0...code.length) {
+			var c = code.charAt(i);
+
+			if (c == '"' && !inSingle) {
+				inDouble = !inDouble;
+			} else if (c == '\'' && !inDouble) {
+				inSingle = !inSingle;
+			}
+
+			if (i == pos)
+				return inSingle || inDouble;
+		}
+		return false;
+	}
+
 	public function execute(data:String):HOutput {
 		var res:HOutput = {success: false, data: ''};
-		for (pattern in patterns) {
-        var pos = 0;
-        while (pos < result.length) {
-            pos = result.indexOf(pattern, pos);
-            if (pos == -1) break; // No more occurrences of pattern
+		var result = data;
 
-            // Check if the pattern is followed by a space and an alphanumeric string
-            var start = pos + pattern.length;
-            if (start < result.length && result.charAt(start) == ' ') {
-                // Now check if the next part is alphanumeric
-                var end = start + 1;
-                while (end < result.length && (Std.isDigit(result.charAt(end)) || (result.charAt(end) >= 'A' && result.charAt(end) <= 'Z') || (result.charAt(end) >= 'a' && result.charAt(end) <= 'z'))) {
-                    end++;
-                }
+		for (type in types) {
+			var pos = 0;
+			while (pos < result.length) {
+				pos = result.indexOf(type, pos);
+				if (pos == -1)
+					break;
 
-                // If we found an alphanumeric string after the space, apply the transformation
-                if (end > start + 1) {
-                    var alphanumericPart = result.substring(start + 1, end);
-                    var transformed = transformAlphanumeric(alphanumericPart);
-                    result = result.substring(0, start + 1) + transformed + result.substring(end);
-                }
-            }
-            pos = start + 1; // Move past the last pattern match to continue searching
-        }
-    }
+				var start = pos + type.length;
+				if (start < result.length && result.charAt(start) == ' ') {
+					var end = start + 1;
+
+					while (end < result.length
+						&& ((result.charAt(end) >= '0' && result.charAt(end) <= '9')
+							|| (result.charAt(end) >= 'A' && result.charAt(end) <= 'Z')
+							|| (result.charAt(end) >= 'a' && result.charAt(end) <= 'z')
+							|| result.charAt(end) == '_')) {
+						end++;
+					}
+
+					if (end < result.length && result.charAt(end) == '(') {
+						var parenCount = 1;
+						end++;
+						while (end < result.length && parenCount > 0) {
+							if (result.charAt(end) == '(')
+								parenCount++;
+							else if (result.charAt(end) == ')')
+								parenCount--;
+							end++;
+						}
+					}
+
+					var alphanumericPart = result.substring(start + 1, end);
+					var declaration:String;
+					var valid = !inString(pos, result);
+
+					if (valid) {
+						for (keyWord in keyWords) {
+							if (alphanumericPart == keyWord) {
+								valid = false;
+								break;
+							}
+						}
+					}
+
+					if (valid) {
+						if (alphanumericPart.indexOf('(') != -1)
+							declaration = '${alphanumericPart}:${convertTypes(type)}';
+						else
+							declaration = convertVariableDecl('$type $alphanumericPart');
+						result = result.substring(0, pos) + declaration + result.substring(pos + (end - pos));
+					}
+				}
+
+				pos = start + 1;
+			}
+		}
 		res.success = true;
-		res.data = data;
+		res.data = result;
 		return res;
 	}
 
-	public function init(codeBase:Array<String>)
-	{
-		for (sourceFile in codeBase)
-		{
-			var content:String = File.getContent(sourcrFile);
-			
+	public function init(codeBase:Array<String>):IModule {
+		for (sourceFile in codeBase) {
+			var content:String = File.getContent(sourceFile);
+
 			// match keyword, space, then capture the following alphanumeric word
 			// I actually have no idea if this works
-            var regex = ~/\b(?:typedef|enum|class|interface)\s+([A-Za-z0-9<>()]+)/g;
-            while (regex.match(content)) {
-                types.push(regex.matched(1)); // captured name
-    		}
+			var regex = ~/\b(?:typedef|enum|class|interface)\s+([A-Za-z0-9<>()]+)/g;
+			regex.match(content);
+			types.push(regex.matched(1)); // captured name
 		}
+		return this;
 	}
 
 	public function convertVariableDecl(variableDeclaration:String = 'float uno = 1.0;'):String {
@@ -83,7 +128,7 @@ class HXLModule implements IModule {
 		else
 			typeStr = convertTypes(typeStr);
 
-		return 'var ${varName}:${typeStr}${varValue != '' ? ' = ${varValue}' : ''};';
+		return '${varName}:${typeStr}';
 	}
 
 	public function convertInlineStructType(typeStr:String):String {

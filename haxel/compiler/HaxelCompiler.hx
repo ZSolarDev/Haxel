@@ -41,6 +41,7 @@ class HaxelCompiler {
 
 			Sys.println('All source code has been name validated! Transpiling source code...');
 
+			HaxelTranspiler.initModule('hxl', sourceFiles);
 			for (file in sourceFiles) {
 				var transpiled = null;
 				if (file.endsWith('.hxl')) {

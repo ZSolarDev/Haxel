@@ -1,4 +1,4 @@
-package; // Right now its just plain haxe cause the transpilers weren't made yet.
+package;
 
 import flixel.FlxGame;
 import openfl.display.Sprite;

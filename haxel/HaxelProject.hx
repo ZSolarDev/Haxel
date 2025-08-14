@@ -3,7 +3,7 @@ package haxel;
 enum abstract HaxelGraphicsEngine(String) {
 	var FLIXEL = 'flixel';
 	var HAXEL_GRAPHICS_FRAMEWORK = 'haxel-graphics-framework';
-	var CUSTOM = 'custom';
+	var NONE_OR_CUSTOM = 'none-or-custom';
 }
 
 typedef HaxelProject = {

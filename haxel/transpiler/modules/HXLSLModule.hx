@@ -2,17 +2,17 @@ package haxel.transpiler.modules;
 
 import haxel.Haxel.HOutput;
 
-class HXLSLModule implements IModule
-{
-    public function new() {}
+class HXLSLModule implements IModule {
+	public function new() {}
 
-    // Placeholder
-    public function execute(data:String):HOutput {
-        var res:HOutput = {success: false, data: ''};
-        res.success = true;
-        res.data = data;
+	// Placeholder
+	public function execute(data:String):HOutput {
+		var res:HOutput = {success: false, data: ''};
+		res.success = true;
+		res.data = data;
 		return res;
 	}
 
-	public function init(codeBase:Array<String>):Void;
+	public function init(codeBase:Array<String>):IModule
+		return this;
 }

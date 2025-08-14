@@ -1,5 +1,6 @@
 package haxel.compiler;
 
+import haxe.io.Path;
 import haxel.Haxel.HOutput;
 import sys.FileSystem;
 import sys.io.File;
@@ -30,14 +31,19 @@ class HaxelTranspiledCompiler {
 
 				default:
 					var hxml = '
---class-path source
+--class-path ${transpiledPath}${project.sourceFolder}
 --main Main
---cpp bin
+--cpp ${transpiledPath}bin
                     ';
 					FileSystem.createDirectory('${transpiledPath}bin/');
 					File.saveContent('${transpiledPath}Project.hxml', hxml);
 					Sys.println('Project.hxml created! Building project with haxe cpp...');
-					Sys.command('haxe "$projectPath/Project.hxml"');
+					Sys.command('haxe "${transpiledPath}Project.hxml"');
+					if (test) {
+						Sys.println('Running compiled project! \n\n');
+						Sys.command(('"${transpiledPath.substr(2, transpiledPath.length - 2)}bin/Main.exe"').replace('/', '\\'));
+						Sys.println('\n');
+					}
 			}
 			output.success = true;
 			output.data = 'Haxel Project Compiled!';

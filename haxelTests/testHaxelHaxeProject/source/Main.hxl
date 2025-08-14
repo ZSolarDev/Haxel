@@ -1,0 +1,8 @@
+class Main
+{
+    public static function main()
+    {
+        var string test = 'ughhh testing..';
+        trace(test); // TODO: replace trace with print
+    }
+}
