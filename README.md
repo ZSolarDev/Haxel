@@ -12,7 +12,7 @@ Haxel was made to provide ease of use when dealing with compute shaders in haxe.
 Haxel's syntax is also a bit different from haxe, only in a couple subtle ways. Instead of doing something like `var coolFloat:Float = 0;`, Haxel uses `float coolFloat = 0;`. Instead of `trace`, Haxel uses `print`. Finally, instead of doing `var coolVar:{coolInt:Int, coolFloat:Float};`, you would do `var coolVar:{int coolInt, float coolFloat};`. These changes were made because I find it simpler defining the variable type to make a variable instead of typing var to state variable declarations; I also like this way of defining dynamic structures, and print makes more sense than trace.
 
 ## How does a Haxel project compile?
-The Haxel compiler essentially converts Haxel to Haxe and runs it through the Haxe compiler to give you your final result. Basically just `haxel -D build -D path/to/project/file.hxlp`(not working currently, look [here](https://github.com/ZSolarDev/Haxel/blob/main/README.md#how-to-use-haxeltests).)
+The Haxel compiler essentially converts Haxel to Haxe and runs it through the Haxe compiler to give you your final result. Basically just `haxel -D build -D path/to/project/file.hxlp`(not working currently, look [here](https://github.com/ZSolarDev/Haxel#how-to-use-haxeltests).)
 
 ## What about graphics(optional)?
 Haxel has two built-in graphics API's: Flixel and Haxel Graphics Framework. You can make your own too, you just won't have the ability to create a custom project layout unless you modify the Haxel compiler.
