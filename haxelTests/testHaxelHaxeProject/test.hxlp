@@ -1,0 +1,7 @@
+{
+    "sourceFolder": "source",
+    "outputFolder": "export",
+    "graphicsEngine": "none-or-custom",
+    "flixelTargetOverride": "",
+    "copiedFolders": []
+}

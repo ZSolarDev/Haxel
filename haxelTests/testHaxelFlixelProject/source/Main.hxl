@@ -1,0 +1,13 @@
+package;
+
+import flixel.FlxGame;
+import openfl.display.Sprite;
+
+class Main extends Sprite
+{
+	public void new()
+	{
+		super();
+		addChild(new FlxGame(0, 0, testPackage.PlayState));
+	}
+}

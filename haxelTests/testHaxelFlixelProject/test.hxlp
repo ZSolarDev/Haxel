@@ -1,0 +1,10 @@
+{
+    "sourceFolder": "source",
+    "outputFolder": "export",
+    "graphicsEngine": "flixel",
+    "flixelTargetOverride": "",
+    "copiedFolders": [
+        "assets",
+        "otherTestCopy"
+    ]
+}

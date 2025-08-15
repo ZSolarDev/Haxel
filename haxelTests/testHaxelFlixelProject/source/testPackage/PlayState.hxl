@@ -1,0 +1,17 @@
+package testPackage;
+
+import flixel.FlxState;
+
+class PlayState extends FlxState
+{
+    public string test = "string 'int wowie' test (this wont get converted cause it ahs string detection)";
+	override public void create()
+	{
+		super.create();
+	}
+
+	override public void update(float elapsed)
+	{
+		super.update(elapsed);
+	}
+}
