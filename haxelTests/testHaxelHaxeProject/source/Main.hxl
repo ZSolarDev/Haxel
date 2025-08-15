@@ -1,6 +1,6 @@
 class Main
 {
-    public void main()
+    public static void main()
     {
         string test = 'ughhh testing..';
         trace(test); // TODO: replace trace with print
