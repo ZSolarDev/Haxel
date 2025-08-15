@@ -14,8 +14,8 @@ Haxel's syntax is also a bit different from haxe, only in a couple subtle ways. 
 ## How does a Haxel project compile?
 The Haxel compiler essentially converts Haxel to Haxe and runs it through the Haxe compiler to give you your final result. Basically just `haxel build path/to/project/file.hxlp`.
 
-## What about graphics?
-Haxel has two built-in graphics API's: Flixel and Haxel Graphics Framework. You can make your own too, you just won't have the ability to create a custom project layout unless you modify the Haxel compiler. In fact you don't even need one.
+## What about graphics(optional)?
+Haxel has two built-in graphics API's: Flixel and Haxel Graphics Framework. You can make your own too, you just won't have the ability to create a custom project layout unless you modify the Haxel compiler.
 
 ### Flixel
 Flixel integrates nicely with Haxel, it's basically the same as normal haxe. Project.xml, Main, states, etc. The only catches are that the folders copied stated in the hxlp have to be the same as the Project.xml, and your souce folder in the Project.xml MUST be source, but keep your hxlp source folder the same(e.g. if my source folder was src, my hxlp would be src but my Project.xml would have to be source).
