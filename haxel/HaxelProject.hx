@@ -7,6 +7,7 @@ enum abstract HaxelGraphicsEngine(String) {
 }
 
 typedef HaxelProject = {
+	var includesHaxelStandardLibrary:Bool;
 	var sourceFolder:String;
 	var outputFolder:String;
 	var graphicsEngine:HaxelGraphicsEngine;
