@@ -1,0 +1,7 @@
+class Cool
+{
+    public static void coolTest(string wowie)
+    {
+        trace(wowie);
+    }
+}

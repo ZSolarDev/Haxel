@@ -54,7 +54,8 @@ Commands:
 			FileSystem.createDirectory(outputPath);
 
 		var result = HaxelCompiler.compileProject(project, sourcePath, outputPath, test);
-		Sys.println(result.data);
+		if (!test)
+			Sys.println('\n${result.data}\n');
 		exit = true;
 	}
 

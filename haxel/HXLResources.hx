@@ -1,3 +1,3 @@
-package haxel.injector;
+package haxel;
 
 typedef HXLResources = haxe.Resource;

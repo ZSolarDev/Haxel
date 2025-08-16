@@ -37,16 +37,14 @@ class HaxelTranspiledCompiler {
                     ';
 					FileSystem.createDirectory('${transpiledPath}bin/');
 					File.saveContent('${transpiledPath}Project.hxml', hxml);
-					Sys.println('Project.hxml created! Building project with haxe cpp...');
+					Sys.println('Project.hxml created! Building project with hxcpp...');
 					var out = Sys.command('haxe "${transpiledPath}Project.hxml"');
-					if (out != 0) {
-						throw "\nHaxel Project Failed to compile and I have no idea why, fix your error please!
-(This might be an issue with the Haxel Compiler! If you cant figure out the error, please double check the transpiled output just incase it's a syntax error and the transpiler transpiled wrong.";
-					}
+					if (out != 0)
+						throw "\nHaxel Compiler detected a failed compile!\n";
 					if (test) {
 						Sys.println('Running compiled project! \n\n');
-						Sys.command(('"${transpiledPath.substr(2, transpiledPath.length - 2)}bin/Main.exe"').replace('/', '\\'));
-						Sys.println('\n');
+						FileSystem.rename('${transpiledPath}bin/Main.exe', '${transpiledPath}bin/${project.haxeExeName}.exe');
+						Sys.command(('"${transpiledPath.substr(2, transpiledPath.length - 2)}bin/${project.haxeExeName}.exe"').replace('/', '\\'));
 					}
 			}
 			output.success = true;

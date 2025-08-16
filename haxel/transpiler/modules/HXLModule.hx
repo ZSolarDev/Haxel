@@ -151,8 +151,8 @@ class HXLModule implements IModule {
 
 			// match keyword, space, then capture the following alphanumeric word
 			var regex = ~/\b(?:typedef|enum|class|interface)\s+([A-Za-z0-9<>()]+)/g;
-			regex.match(content);
-			types.push(regex.matched(1)); // captured name
+			if (regex.match(content))
+				types.push(regex.matched(1)); // captured name
 		}
 		return this;
 	}

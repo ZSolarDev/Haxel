@@ -1,7 +1,10 @@
 {
+    "includesHaxelStandardLibrary": true,
+    "includesExtendedHaxelStandardLibrary": false,
     "sourceFolder": "source",
     "outputFolder": "export",
     "graphicsEngine": "none-or-custom",
     "flixelTargetOverride": "",
+    "haxeExeName": "CoolExe",
     "copiedFolders": []
 }

@@ -1,4 +1,6 @@
 {
+    "includesHaxelStandardLibrary": true,
+    "includesExtendedHaxelStandardLibrary": true,
     "sourceFolder": "source",
     "outputFolder": "export",
     "graphicsEngine": "flixel",

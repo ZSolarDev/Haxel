@@ -39,7 +39,7 @@ class HaxelCompiler {
 				}
 			}
 
-			Sys.println('All source code has been name validated! Transpiling source code...');
+			Sys.println('All source code has been name validated! Transpiling source code...\n');
 
 			HaxelTranspiler.initModule('hxl', sourceFiles);
 			for (file in sourceFiles) {
@@ -67,7 +67,7 @@ class HaxelCompiler {
 					}
 				}
 			}
-			Sys.println('All source code has been transpiled! Copying folders...');
+			Sys.println('\nAll source code has been transpiled! Copying folders...\n');
 
 			for (folder in project.copiedFolders) {
 				var files = recursiveDirRead('./$projectPath/$folder');
@@ -102,8 +102,8 @@ class HaxelCompiler {
 						File.getBytes(('.$file').replace('//', '/')));
 				}
 			}
-			Sys.println('Folders copied! Compiling transpiled files...');
-			output = HaxelTranspiledCompiler.compileProject(project, './${Path.normalize(projectPath)}', '$outputPath/transpiled/', outputPath, test);
+			Sys.println('Folders copied! Injecting Haxel Standard Library...\n');
+			output = HaxelPostTranspiler.compileProject(project, './${Path.normalize(projectPath)}', '$outputPath/transpiled/', outputPath, test);
 			return output;
 		} catch (e) {
 			return {success: false, data: 'HXLTRANSPILER_ERROR: ${e.message} || ${e.stack}'};

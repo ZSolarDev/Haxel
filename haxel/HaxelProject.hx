@@ -7,12 +7,14 @@ enum abstract HaxelGraphicsEngine(String) {
 }
 
 typedef HaxelProject = {
+	var includesExtendedHaxelStandardLibrary:Bool;
 	var includesHaxelStandardLibrary:Bool;
 	var sourceFolder:String;
 	var outputFolder:String;
 	var graphicsEngine:HaxelGraphicsEngine;
 	var copiedFolders:Array<String>;
 	var flixelTargetOverride:String;
+	var haxeExeName:String;
 }
 
 class HaxelProjectParser {
