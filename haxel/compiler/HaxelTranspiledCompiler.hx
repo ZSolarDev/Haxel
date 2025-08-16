@@ -51,7 +51,7 @@ class HaxelTranspiledCompiler {
 			output.data = 'Haxel Project Compiled!';
 			return output;
 		} catch (e) {
-			return {success: false, data: '\nHXLCOMPILER_ERROR: (TODO: make it fully error proof) || ${e.message} || ${e.stack}'};
+			return {success: false, data: '\nHXLCOMPILER_ERROR:  ${e.message} || ${e.stack}'};
 		}
 	}
 }
