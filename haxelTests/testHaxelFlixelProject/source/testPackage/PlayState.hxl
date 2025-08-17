@@ -1,6 +1,7 @@
 package testPackage;
 
 import flixel.*;
+import flixel.group.FlxGroup.FlxTypedGroup; // iirc this is corect
 import hxlstd.display.RGBATex;
 
 class PlayState extends FlxState
@@ -9,7 +10,12 @@ class PlayState extends FlxState
 	override public void create()
 	{
 		super.create();
-        FlxSprite spr;
+        // TODO: Transpile this correctly
+        //FlxTypedGroup<FlxSprite> grpTest = new FlxTypedGroup<FlxSprite>();
+        //add(grpTest);
+        FlxSprite spr = new FlxSprite(0, 0).makeGraphic(200, 200, 0xFFFF0000);
+        //grpTest.add(spr);
+        add(spr);
 	}
 
 	override public void update(float elapsed)
