@@ -1,6 +1,7 @@
 package haxel.transpiler.modules;
 
 import haxel.Haxel.HOutput;
+import haxel.Haxel.Verbose;
 import sys.io.File;
 
 using StringTools;
@@ -85,8 +86,7 @@ class HXLModule implements IModule {
 						&& ((result.charAt(end) >= '0' && result.charAt(end) <= '9')
 							|| (result.charAt(end) >= 'A' && result.charAt(end) <= 'Z')
 							|| (result.charAt(end) >= 'a' && result.charAt(end) <= 'z')
-							|| result.charAt(end) == '_')
-						|| result.charAt(end) == ';') {
+							|| result.charAt(end) == '_')) {
 						end++;
 					}
 
@@ -154,11 +154,50 @@ class HXLModule implements IModule {
 		return s.substr(0, i);
 	}
 
-	public function init(codeBase:Array<String>, verbose:Bool = false):IModule {
+	public static function stripComments(src:String):String {
+		var out = new StringBuf();
+		var i = 0;
+		var len = src.length;
+		while (i < len) {
+			var c = src.charAt(i);
+			if (c == "/" && i + 1 < len) {
+				var c2 = src.charAt(i + 1);
+				if (c2 == "/") {
+					// line comment: skip until newline (but keep newline)
+					i += 2;
+					while (i < len && src.charAt(i) != '\n')
+						i++;
+					if (i < len) {
+						out.add("\n");
+						i++;
+					}
+				} else if (c2 == "*") {
+					// block comment: advance until */; preserve newlines inside
+					i += 2;
+					while (i + 1 < len && !(src.charAt(i) == '*' && src.charAt(i + 1) == '/')) {
+						if (src.charAt(i) == '\n')
+							out.add("\n");
+						i++;
+					}
+					i += 2; // skip */
+				} else {
+					out.add(c);
+					i++;
+				}
+			} else {
+				out.add(c);
+				i++;
+			}
+		}
+		return out.toString();
+	}
+
+	public function init(codeBase:Array<String>, verbose:Verbose):IModule {
 		for (sourceFile in codeBase) {
 			if (sourceFile.endsWith('.hxl') || sourceFile.endsWith('.hx')) {
-				Sys.println('Searching for types in $sourceFile');
-				var content:String = File.getContent(sourceFile);
+				if (verbose.plus)
+					Sys.println('Searching for types in $sourceFile');
+				var content:String = stripComments(File.getContent(sourceFile));
 
 				// match keyword, space, then capture the following alphanumeric word
 				var regex = ~/\b(?:typedef|enum|class|interface)\s+([A-Za-z0-9<>()]+)/g;
@@ -222,17 +261,17 @@ class HXLModule implements IModule {
 	}
 
 	public function convertTypes(type:String = 'array<array<string>>') {
-		var lowerCaseType = type.toLowerCase();
+		var finalType = type;
 
-		lowerCaseType = lowerCaseType.replace('float', 'Float');
-		lowerCaseType = lowerCaseType.replace('int', 'Int');
-		lowerCaseType = lowerCaseType.replace('string', 'String');
-		lowerCaseType = lowerCaseType.replace('array', 'Array');
-		lowerCaseType = lowerCaseType.replace('null', 'Null');
-		lowerCaseType = lowerCaseType.replace('bool', 'Bool');
-		lowerCaseType = lowerCaseType.replace('void', 'Void');
-		lowerCaseType = lowerCaseType.replace('dynamic', 'Dynamic');
+		finalType = finalType.replace('float', 'Float');
+		finalType = finalType.replace('int', 'Int');
+		finalType = finalType.replace('string', 'String');
+		finalType = finalType.replace('array', 'Array');
+		finalType = finalType.replace('null', 'Null');
+		finalType = finalType.replace('bool', 'Bool');
+		finalType = finalType.replace('void', 'Void');
+		finalType = finalType.replace('dynamic', 'Dynamic');
 
-		return lowerCaseType;
+		return finalType;
 	}
 }

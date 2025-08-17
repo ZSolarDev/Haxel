@@ -2,6 +2,7 @@ package haxel.compiler;
 
 import haxe.io.Path;
 import haxel.Haxel.HOutput;
+import haxel.Haxel.Verbose;
 import sys.FileSystem;
 import sys.io.File;
 
@@ -9,7 +10,7 @@ using StringTools;
 
 class HaxelTranspiledCompiler {
 	public static function compileProject(project:HaxelProject, projectPath:String, transpiledPath:String, outputPath:String, test:Bool = false,
-			verbose:Bool = false):HOutput {
+			verbose:Verbose):HOutput {
 		try {
 			var output:HOutput = {success: false, data: ''};
 			if (!project.libraries.contains('format'))
@@ -23,7 +24,8 @@ class HaxelTranspiledCompiler {
 						if (FileSystem.exists('$projectPath/project.xml'))
 							projectXML = File.getContent('$projectPath/project.xml');
 						else {
-							Sys.println("HXLCOMPILER_INFO: a Project.xml file wasn't found. Automatically creating one...");
+							if (verbose.enabled)
+								Sys.println("A Project.xml file wasn't found. Automatically creating one...");
 							if (!project.libraries.contains('flixel'))
 								project.libraries.push('flixel');
 							projectXML = '
@@ -35,10 +37,13 @@ class HaxelTranspiledCompiler {
     <set name="BUILD_DIR" value="export" />
     <source path="source" />
                             ';
+							if (project.flixelOptions.windowTags.length > 0)
+								projectXML += '\n    <!-- ___________ Window Options __________ -->';
 							for (windowTag in project.flixelOptions.windowTags)
 								projectXML += '
     <window ${windowTag.replace("'", '"')} />';
-							projectXML += '\n\n    <!-- _______________ Assets ______________ -->';
+							if (project.copiedFolders.length > 0)
+								projectXML += '\n\n    <!-- _______________ Assets ______________ -->';
 							for (folder in project.copiedFolders)
 								projectXML += '
     <assets path="$folder" />';
@@ -46,12 +51,14 @@ class HaxelTranspiledCompiler {
 							for (library in project.libraries)
 								projectXML += '
     <haxelib name="$library" />';
-							projectXML += '\n\n    <!-- ______________ Defines ______________ -->';
+							if (project.flixelOptions.defines.length > 0)
+								projectXML += '\n\n    <!-- ______________ Defines ______________ -->';
 							for (define in project.flixelOptions.defines)
 								projectXML += '
     <haxedef name="${define.name}" ${define.data.replace("'", '"')} />';
 
-							projectXML += '\n\n    <!-- ________________ Misc _______________ -->';
+							if (project.flixelOptions.miscTags.length > 0)
+								projectXML += '\n\n    <!-- ________________ Misc _______________ -->';
 							for (miscTag in project.flixelOptions.miscTags)
 								projectXML += '
     <${miscTag.replace("'", '"')} />';
@@ -60,11 +67,13 @@ class HaxelTranspiledCompiler {
     ${pureInjection.replace("'", '"')}';
 						}
 						projectXML += '\n</project>';
-						if (verbose)
+						if (verbose.plus)
 							Sys.println('Project.xml created!\n$projectXML\n\n');
+						else if (verbose.enabled)
+							Sys.println('Project.xml created!');
 					}
 					File.saveContent('${transpiledPath}Project.xml', projectXML);
-					Sys.println('Building project with flixel to target "${project.flixelOptions.targetOverride == '' ? 'hl' : project.flixelOptions.targetOverride}"');
+					Sys.println('Building project with flixel to target "${project.flixelOptions.targetOverride == '' ? 'hl' : project.flixelOptions.targetOverride}"\n');
 					Sys.command('lime ${test ? 'test' : 'build'} "${transpiledPath}Project.xml" ${project.flixelOptions.targetOverride == '' ? 'hl' : project.flixelOptions.targetOverride}');
 				case HAXEL_GRAPHICS_FRAMEWORK:
 

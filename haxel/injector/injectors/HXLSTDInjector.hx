@@ -1,6 +1,7 @@
 package haxel.injector.injectors;
 
 import haxel.Haxel.HOutput;
+import haxel.Haxel.Verbose;
 import sys.FileSystem;
 import sys.io.File;
 
@@ -12,7 +13,7 @@ class HXLSTDInjector implements IInjector {
 
 	public function new() {}
 
-	public function injectToSource(path:String, project:haxel.HaxelProject, verbose:Bool):HOutput {
+	public function injectToSource(path:String, project:haxel.HaxelProject, verbose:Verbose):HOutput {
 		var res = {success: false, data: ''};
 		try {
 			if (project.includesHaxelStandardLibrary) {
@@ -26,7 +27,7 @@ class HXLSTDInjector implements IInjector {
 						FileSystem.createDirectory(finalPath);
 
 					File.saveContent('$finalPath${hxPackage.replace('.', '/').split('/').pop()}.hx', finalHX);
-					if (verbose)
+					if (verbose.plus)
 						Sys.println('Injected File: $hxPackage.hx');
 				}
 			}
@@ -42,7 +43,7 @@ class HXLSTDInjector implements IInjector {
 						FileSystem.createDirectory(finalPath);
 
 					File.saveContent('$finalPath${hxPackage.replace('.', '/').split('/').pop()}.hx', finalHX);
-					if (verbose)
+					if (verbose.plus)
 						Sys.println('Injected File: $hxPackage.hx');
 				}
 			}
@@ -57,6 +58,6 @@ class HXLSTDInjector implements IInjector {
 		}
 	}
 
-	public function injectToFile(path:String, project:haxel.HaxelProject, verbose:Bool):HOutput
+	public function injectToFile(path:String, project:haxel.HaxelProject, verbose:Verbose):HOutput
 		return {success: true, data: ''};
 }

@@ -1,6 +1,7 @@
 package haxel.transpiler.modules;
 
 import haxel.Haxel.HOutput;
+import haxel.Haxel.Verbose;
 
 class HXLSLModule implements IModule {
 	public function new() {}
@@ -13,6 +14,6 @@ class HXLSLModule implements IModule {
 		return res;
 	}
 
-	public function init(codeBase:Array<String>, verbose:Bool = false):IModule
+	public function init(codeBase:Array<String>, verbose:Verbose):IModule
 		return this;
 }

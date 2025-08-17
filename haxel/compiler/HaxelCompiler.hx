@@ -2,6 +2,7 @@ package haxel.compiler;
 
 import haxe.io.Path;
 import haxel.Haxel.HOutput;
+import haxel.Haxel.Verbose;
 import haxel.transpiler.HaxelTranspiler;
 import sys.FileSystem;
 import sys.io.File;
@@ -11,7 +12,7 @@ using StringTools;
 
 // STRING MANIPULATION SUCKS!!!! I HATE IT!! WRITING THIS COMPILER AND THE TRANSPILER WAS TRAUMATIC.
 class HaxelCompiler {
-	public static function compileProject(project:HaxelProject, sourcePath:String, outputPath:String, test:Bool = false, verbose:Bool = false):HOutput {
+	public static function compileProject(project:HaxelProject, sourcePath:String, outputPath:String, test:Bool = false, verbose:Verbose):HOutput {
 		try {
 			var output:HOutput = {success: false, data: ''};
 			sourcePath = sourcePath.substr(2, sourcePath.length - 2);
@@ -40,7 +41,7 @@ class HaxelCompiler {
 				}
 			}
 
-			Sys.println('All source code has been name validated! Transpiling source code...${verbose ? '\n' : ''}');
+			Sys.println('All source code has been name validated! Initializing modules...${verbose.plus ? '\n' : ''}');
 
 			var libFiles = sourceFiles;
 			if (project.graphicsEngine == FLIXEL && !project.libraries.contains('flixel'))
@@ -54,6 +55,8 @@ class HaxelCompiler {
 				libFiles = libFiles.concat(recursiveDirRead(libPath));
 			}
 			HaxelTranspiler.initModule('hxl', libFiles, verbose);
+
+			Sys.println('${verbose.plus ? '\n' : ''}Modules initialized! Transpiling source code...${verbose.enabled ? '\n' : ''}');
 			for (file in sourceFiles) {
 				var transpiled = null;
 				if (file.endsWith('.hxl')) {
@@ -68,7 +71,7 @@ class HaxelCompiler {
 					FileSystem.createDirectory(Path.directory('$outputPath/transpiled/source/$hxPath'));
 					File.saveContent('$outputPath/transpiled/source/$hxPath', transpiled.data);
 
-					if (verbose)
+					if (verbose.enabled)
 						Sys.println('Transpiled HXL: ${Path.withoutDirectory(hxPath)}');
 				} else {
 					if (file.endsWith('.hxlsl')) {
@@ -76,12 +79,12 @@ class HaxelCompiler {
 						var shaderPath = '$outputPath/transpiled/__HXL_SHADERS';
 						FileSystem.createDirectory(shaderPath);
 						File.saveContent('$shaderPath/${file.split('/')[file.split('/').length - 1].replace('.hxlsl', '.comp')}', transpiled.data);
-						if (verbose)
+						if (verbose.enabled)
 							Sys.println('Transpiled HXLSL: ${file.split('/')[file.split('/').length - 1].replace('.hxlsl', '.comp')}');
 					}
 				}
 			}
-			Sys.println('${verbose ? '\n' : ''}All source code has been transpiled! Copying folders...${verbose ? '\n' : ''}');
+			Sys.println('${verbose.enabled ? '\n' : ''}All source code has been transpiled! Copying folders...');
 
 			for (folder in project.copiedFolders) {
 				var files = recursiveDirRead('./$projectPath/$folder');
@@ -117,7 +120,7 @@ class HaxelCompiler {
 						File.getBytes(('./$file').replace('//', '/')));
 				}
 			}
-			Sys.println('Folders copied! Injecting Haxel Standard Library...${verbose ? '\n' : ''}');
+			Sys.println('Folders copied! Injecting Haxel Standard Library...${verbose.plus ? '\n' : ''}');
 			output = HaxelPostTranspiler.compileProject(project, './${Path.normalize(projectPath)}', '$outputPath/transpiled/', outputPath, test, verbose);
 			return output;
 		} catch (e) {

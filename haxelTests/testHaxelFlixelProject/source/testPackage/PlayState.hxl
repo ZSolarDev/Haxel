@@ -9,7 +9,7 @@ class PlayState extends FlxState
 	override public void create()
 	{
 		super.create();
-        FlxSprite spr ;
+        FlxSprite spr;
 	}
 
 	override public void update(float elapsed)

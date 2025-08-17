@@ -11,6 +11,11 @@ typedef HOutput = {
 	var data:String;
 }
 
+typedef Verbose = {
+	var enabled:Bool;
+	var plus:Bool;
+}
+
 class Haxel {
 	public static var exit:Bool = false;
 	public static var interfaceMessage:String = '
@@ -18,9 +23,11 @@ Haxel Command Line Interface Version 0.0.1
 ----------------------------
 Commands:
     build: Builds the project file from the running directory with the specified path. Usage:
-        haxel build [path to project file including file extension]
+        haxel -D build -D [path to project file including file extension] optionals: -D verbose/verbosePlus
+    test: Tests the project file from the running directory with the specified path. Usage:
+        haxel -D build -D [path to project file including file extension] optionals: -D verbose/verbosePlus
     help: Displays the commands and their usages. Usage:
-        haxel help
+        haxel -D help
 ';
 
 	static function verify():HOutput {
@@ -35,7 +42,7 @@ Commands:
 		return {success: true, data: path};
 	}
 
-	static function buildProject(project:HaxelProject, hxlpPath:String, test:Bool = false, verbose:Bool = false) {
+	static function buildProject(project:HaxelProject, hxlpPath:String, test:Bool = false, verbose:Verbose) {
 		// Placeholder for now
 		var realHxlpPath = './';
 		var segments = hxlpPath.split('/');
@@ -59,11 +66,16 @@ Commands:
 		exit = true;
 	}
 
-	static function getVerbose():Bool {
-		var res = false;
-		for (arg in Sys.args())
+	static function getVerbose():Verbose {
+		var res = {enabled: false, plus: false};
+		for (arg in Sys.args()) {
 			if (arg == 'verbose')
-				res = true;
+				res.enabled = true;
+			if (arg == 'verbosePlus') {
+				res.enabled = true;
+				res.plus = true;
+			}
+		}
 		return res;
 	}
 

@@ -33,6 +33,10 @@ For using the tests, inside of this folder(the root folder), run one of these 8 
 `./haxelTests/testHaxeVerbose.ps1`
 `./haxelTests/buildFlixelVerbose.ps1`
 `./haxelTests/buildHaxeVerbose.ps1`
+`./haxelTests/testFlixelVerbosePlus.ps1`
+`./haxelTests/testHaxeVerbosePlus.ps1`
+`./haxelTests/buildFlixelVerbosePlus.ps1`
+`./haxelTests/buildHaxeVerbosePlus.ps1`
 The tests build and run. The builds only build it.
 
 # TODO: add Haxel demos showcasing compite shader flexibility, hxlstd, etc.

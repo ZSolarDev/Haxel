@@ -1,6 +1,7 @@
 package haxel.transpiler;
 
 import haxel.Haxel.HOutput;
+import haxel.Haxel.Verbose;
 import haxel.transpiler.modules.*;
 import sys.io.File;
 
@@ -12,7 +13,7 @@ class HaxelTranspiler {
 	public static function getModule(module:String):IModule
 		return modules.get(module);
 
-	public static function initModule(module:String, codeBase:Array<String>, verbose:Bool):IModule
+	public static function initModule(module:String, codeBase:Array<String>, verbose:Verbose):IModule
 		return modules.get(module).init(codeBase, verbose);
 
 	public static function transpile(module:String, file:String):HOutput
