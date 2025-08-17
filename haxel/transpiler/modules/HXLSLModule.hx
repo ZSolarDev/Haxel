@@ -13,6 +13,6 @@ class HXLSLModule implements IModule {
 		return res;
 	}
 
-	public function init(codeBase:Array<String>):IModule
+	public function init(codeBase:Array<String>, verbose:Bool = false):IModule
 		return this;
 }

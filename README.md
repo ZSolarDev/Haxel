@@ -24,11 +24,15 @@ Flixel integrates nicely with Haxel, it's basically the same as normal haxe. Pro
 TODO: make this.
 
 ## How to use haxelTests?
-For using the tests, inside of this folder(the root folder), run one of these four commands:
-`./haxelTests/testFlixel.bat`
-`./haxelTests/testHaxe.bat`
-`./haxelTests/buildFlixel.bat`
-`./haxelTests/buildHaxe.bat`
+For using the tests, inside of this folder(the root folder), run one of these 8 commands with powershell:
+`./haxelTests/testFlixel.ps1`
+`./haxelTests/testHaxe.ps1`
+`./haxelTests/buildFlixel.ps1`
+`./haxelTests/buildHaxe.ps1`
+`./haxelTests/testFlixelVerbose.ps1`
+`./haxelTests/testHaxeVerbose.ps1`
+`./haxelTests/buildFlixelVerbose.ps1`
+`./haxelTests/buildHaxeVerbose.ps1`
 The tests build and run. The builds only build it.
 
 # TODO: add Haxel demos showcasing compite shader flexibility, hxlstd, etc.

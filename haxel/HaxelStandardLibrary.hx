@@ -6,6 +6,7 @@ class HaxelStandardLibrary {
 		/* ----------------     DISPLAY     --------------- */
 		'hxlstd.display.RGB',
 		'hxlstd.display.RGBA',
+		'hxlstd.display.FloatColor',
 		'hxlstd.display.RGBTex',
 		'hxlstd.display.RGBATex',
 		'hxlstd.display.FloatTex',
@@ -13,8 +14,7 @@ class HaxelStandardLibrary {
 		'hxlstd.math.Vec2', // vectors of T type, not just floats.
 		'hxlstd.math.Vec3',
 		'hxlstd.math.Vec4',
-		'hxlstd.math.Statistics', // (mean, median, std deviation, etc.)
-		'hxlstd.math.Math',
+		'hxlstd.math.HMath',
 		/* ---------------- COMPUTE SHADERS --------------- */
 		'hxlstd.compute.ComputeShaderInterface',
 		'hxlstd.compute.ComputeShaderResult',

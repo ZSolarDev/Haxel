@@ -1,18 +1,19 @@
 --main haxel.Haxel
 --interp
+--library format
 
 # Why me. this is literally the equivilant of a DEATH SENTANCE.
 --resource haxel/hxlstd/HXLStd.hx@hxlstd.HXLStd
 --resource haxel/hxlstd/display/RGB.hx@hxlstd.display.RGB
 --resource haxel/hxlstd/display/RGBA.hx@hxlstd.display.RGBA
+--resource haxel/hxlstd/display/FloatColor.hx@hxlstd.display.FloatColor
 --resource haxel/hxlstd/display/RGBTex.hx@hxlstd.display.RGBTex
 --resource haxel/hxlstd/display/RGBATex.hx@hxlstd.display.RGBATex
 --resource haxel/hxlstd/display/FloatTex.hx@hxlstd.display.FloatTex
 --resource haxel/hxlstd/math/Vec2.hx@hxlstd.math.Vec2
 --resource haxel/hxlstd/math/Vec3.hx@hxlstd.math.Vec3
 --resource haxel/hxlstd/math/Vec4.hx@hxlstd.math.Vec4
---resource haxel/hxlstd/math/Statistics.hx@hxlstd.math.Statistics
---resource haxel/hxlstd/math/Math.hx@hxlstd.math.Math
+--resource haxel/hxlstd/math/HMath.hx@hxlstd.math.HMath
 --resource haxel/hxlstd/compute/ComputeShaderInterface.hx@hxlstd.compute.ComputeShaderInterface
 --resource haxel/hxlstd/compute/ComputeShaderResult.hx@hxlstd.compute.ComputeShaderResult
 --resource haxel/hxlstd/compute/types/Vec2.hx@hxlstd.compute.types.Vec2

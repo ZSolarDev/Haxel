@@ -9,9 +9,9 @@ class HXInjector {
 	public static function getInjector(injector:String):IInjector
 		return injectors.get(injector);
 
-	public static function injectToSource(injector:String, path:String, project:HaxelProject):HOutput
-		return getInjector(injector).injectToSource(path, project);
+	public static function injectToSource(injector:String, path:String, project:HaxelProject, verbose:Bool):HOutput
+		return getInjector(injector).injectToSource(path, project, verbose);
 
-	public static function injectToFile(injector:String, path:String, project:HaxelProject):HOutput
-		return getInjector(injector).injectToFile(path, project);
+	public static function injectToFile(injector:String, path:String, project:HaxelProject, verbose:Bool):HOutput
+		return getInjector(injector).injectToFile(path, project, verbose);
 }

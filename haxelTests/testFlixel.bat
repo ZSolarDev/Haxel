@@ -1,2 +1,0 @@
-haxe haxel.hxml -D test -D haxelTests/testHaxelFlixelProject/test.hxlp
-pause

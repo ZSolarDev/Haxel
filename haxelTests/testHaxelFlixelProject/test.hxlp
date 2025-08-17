@@ -1,12 +1,54 @@
 {
-    "includesHaxelStandardLibrary": true,
-    "includesExtendedHaxelStandardLibrary": true,
-    "sourceFolder": "source",
-    "outputFolder": "export",
-    "graphicsEngine": "flixel",
-    "flixelTargetOverride": "",
-    "copiedFolders": [
-        "assets",
-        "otherTestCopy"
-    ]
+  "includesExtendedHaxelStandardLibrary": true,
+  "includesHaxelStandardLibrary": true,
+  "flixelOptions": {
+    "appName": "FlxProject",
+    "fileName": "FlxProject",
+    "mainClass": "Main",
+    "version": "0.0.1",
+    "company": "HaxeFlixel",
+    "windowTags": [
+        "width='1280' height='720' fps='60' background='#000000' hardware='true' vsync='false'",
+        "if='html5' resizable='true'",
+        "if='desktop' orientation='landscape' fullscreen='false' resizable='true'",
+        "if='mobile' orientation='landscape' fullscreen='true' width='0' height='0'"
+    ],
+    "defines": [
+      {
+        "name": "FLX_NO_HEALTH",
+        "data": ""
+      },
+      {
+        "name": "FLX_NO_MOUSE",
+        "data": "if='mobile'"
+      },
+      {
+        "name": "FLX_NO_KEYBOARD",
+        "data": "if='mobile'"
+      },
+      {
+        "name": "FLX_NO_TOUCH",
+        "data": "if='mobile'"
+      },
+      {
+        "name": "FLX_NO_DEBUG",
+        "data": "unless='debug'"
+      },
+      {
+        "name": "message.reporting",
+        "data": "value='pretty'"
+      }
+    ],
+    "miscTags": [],
+    "pureInjections": [],
+    "targetOverride": ""
+  },
+  "sourceFolder": "source",
+  "outputFolder": "export",
+  "graphicsEngine": "flixel",
+  "copiedFolders": [
+    "assets",
+    "otherTestCopy"
+  ],
+  "libraries": []
 }

@@ -35,7 +35,7 @@ Commands:
 		return {success: true, data: path};
 	}
 
-	static function buildProject(project:HaxelProject, hxlpPath:String, test:Bool = false) {
+	static function buildProject(project:HaxelProject, hxlpPath:String, test:Bool = false, verbose:Bool = false) {
 		// Placeholder for now
 		var realHxlpPath = './';
 		var segments = hxlpPath.split('/');
@@ -53,33 +53,38 @@ Commands:
 		if (!FileSystem.exists(outputPath))
 			FileSystem.createDirectory(outputPath);
 
-		var result = HaxelCompiler.compileProject(project, sourcePath, outputPath, test);
+		var result = HaxelCompiler.compileProject(project, sourcePath, outputPath, test, verbose);
 		if (!test)
 			Sys.println('\n${result.data}\n');
 		exit = true;
 	}
 
+	static function getVerbose():Bool {
+		var res = false;
+		for (arg in Sys.args())
+			if (arg == 'verbose')
+				res = true;
+		return res;
+	}
+
 	public static function main() {
+		inline function runBuild(test:Bool = false) {
+			var valid = verify();
+			var verbose = getVerbose();
+			if (valid.success) {
+				var project:HaxelProject = HaxelProjectParser.parseHaxelProject(File.getContent(valid.data));
+				buildProject(project, valid.data, test, verbose);
+			} else {
+				Sys.println(valid.data);
+				return;
+			}
+		}
 		for (arg in Sys.args()) {
 			switch (arg) {
 				case 'build':
-					var valid = verify();
-					if (valid.success) {
-						var project:HaxelProject = HaxelProjectParser.parseHaxelProject(File.getContent(valid.data));
-						buildProject(project, valid.data);
-					} else {
-						Sys.println(valid.data);
-						return;
-					}
+					runBuild();
 				case 'test':
-					var valid = verify();
-					if (valid.success) {
-						var project:HaxelProject = HaxelProjectParser.parseHaxelProject(File.getContent(valid.data));
-						buildProject(project, valid.data, true);
-					} else {
-						Sys.println(valid.data);
-						return;
-					}
+					runBuild(true);
 				case 'help':
 					Sys.println(interfaceMessage);
 					return;

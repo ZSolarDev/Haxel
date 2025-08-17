@@ -5,12 +5,13 @@ import haxel.Haxel.HOutput;
 import haxel.transpiler.HaxelTranspiler;
 import sys.FileSystem;
 import sys.io.File;
+import sys.io.Process;
 
 using StringTools;
 
 // STRING MANIPULATION SUCKS!!!! I HATE IT!! WRITING THIS COMPILER AND THE TRANSPILER WAS TRAUMATIC.
 class HaxelCompiler {
-	public static function compileProject(project:HaxelProject, sourcePath:String, outputPath:String, test:Bool = false):HOutput {
+	public static function compileProject(project:HaxelProject, sourcePath:String, outputPath:String, test:Bool = false, verbose:Bool = false):HOutput {
 		try {
 			var output:HOutput = {success: false, data: ''};
 			sourcePath = sourcePath.substr(2, sourcePath.length - 2);
@@ -39,9 +40,20 @@ class HaxelCompiler {
 				}
 			}
 
-			Sys.println('All source code has been name validated! Transpiling source code...\n');
+			Sys.println('All source code has been name validated! Transpiling source code...${verbose ? '\n' : ''}');
 
-			HaxelTranspiler.initModule('hxl', sourceFiles);
+			var libFiles = sourceFiles;
+			if (project.graphicsEngine == FLIXEL && !project.libraries.contains('flixel'))
+				project.libraries.push('flixel');
+			project.libraries.push('format');
+			for (haxelib in project.libraries) {
+				var p = new Process('haxelib', ['path', haxelib], false);
+				var output = p.stdout.readAll().toString();
+				p.close();
+				var libPath = output.split('\n').shift().trim();
+				libFiles = libFiles.concat(recursiveDirRead(libPath));
+			}
+			HaxelTranspiler.initModule('hxl', libFiles, verbose);
 			for (file in sourceFiles) {
 				var transpiled = null;
 				if (file.endsWith('.hxl')) {
@@ -56,18 +68,20 @@ class HaxelCompiler {
 					FileSystem.createDirectory(Path.directory('$outputPath/transpiled/source/$hxPath'));
 					File.saveContent('$outputPath/transpiled/source/$hxPath', transpiled.data);
 
-					Sys.println('Transpiled HXL: ${Path.withoutDirectory(hxPath)}');
+					if (verbose)
+						Sys.println('Transpiled HXL: ${Path.withoutDirectory(hxPath)}');
 				} else {
 					if (file.endsWith('.hxlsl')) {
 						transpiled = HaxelTranspiler.transpile('hxlsl', file);
 						var shaderPath = '$outputPath/transpiled/__HXL_SHADERS';
 						FileSystem.createDirectory(shaderPath);
 						File.saveContent('$shaderPath/${file.split('/')[file.split('/').length - 1].replace('.hxlsl', '.comp')}', transpiled.data);
-						Sys.println('Transpiled HXLSL: ${file.split('/')[file.split('/').length - 1].replace('.hxlsl', '.comp')}');
+						if (verbose)
+							Sys.println('Transpiled HXLSL: ${file.split('/')[file.split('/').length - 1].replace('.hxlsl', '.comp')}');
 					}
 				}
 			}
-			Sys.println('\nAll source code has been transpiled! Copying folders...\n');
+			Sys.println('${verbose ? '\n' : ''}All source code has been transpiled! Copying folders...${verbose ? '\n' : ''}');
 
 			for (folder in project.copiedFolders) {
 				var files = recursiveDirRead('./$projectPath/$folder');
@@ -81,6 +95,7 @@ class HaxelCompiler {
 					for (segmentID in 0...finalSplit.length)
 						if (segmentID != 0)
 							finalPath += '${finalSplit[segmentID]}/';
+
 					// at this point I started losing my sanity. I. HATE. STRINGS.
 					var why = ('$file').replace('//', '/').replace('./', '').substr(1, ('$file').replace('//', '/').replace('./', '').length - 1);
 					var isThisWhatDeathFeelsLike = why.replace(why.split('/')[why.split('/').length - 1], '');
@@ -99,11 +114,11 @@ class HaxelCompiler {
 					whyyy = whyyy.replace('//', '/');
 					FileSystem.createDirectory('$outputPath/transpiled/$whyyy');
 					File.saveBytes(('$outputPath/transpiled/$whyyy/${file.split('/')[file.split('/').length - 1]}').replace('//', '/'),
-						File.getBytes(('.$file').replace('//', '/')));
+						File.getBytes(('./$file').replace('//', '/')));
 				}
 			}
-			Sys.println('Folders copied! Injecting Haxel Standard Library...\n');
-			output = HaxelPostTranspiler.compileProject(project, './${Path.normalize(projectPath)}', '$outputPath/transpiled/', outputPath, test);
+			Sys.println('Folders copied! Injecting Haxel Standard Library...${verbose ? '\n' : ''}');
+			output = HaxelPostTranspiler.compileProject(project, './${Path.normalize(projectPath)}', '$outputPath/transpiled/', outputPath, test, verbose);
 			return output;
 		} catch (e) {
 			return {success: false, data: 'HXLTRANSPILER_ERROR: ${e.message} || ${e.stack}'};
@@ -113,11 +128,13 @@ class HaxelCompiler {
 	public static function recursiveDirRead(path:String):Array<String> {
 		var files = new Array<String>();
 		var dir = FileSystem.readDirectory(path);
+		var inDrive = path.charAt(1) == ':';
+		var drive = inDrive ? path.charAt(0) + ':' : '';
 		for (file in dir) {
 			if (FileSystem.isDirectory('$path/$file'))
 				files = files.concat(recursiveDirRead('$path/$file'));
 			else
-				files.push(('$path/$file').substr(2, '$path/$file'.length - 2));
+				files.push(('$drive${path.replace('//', '/')}/$file').substr(2, '$drive${path.replace('//', '/')}/$file'.length - 2));
 		}
 		return files;
 	}

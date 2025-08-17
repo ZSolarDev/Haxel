@@ -51,6 +51,7 @@ class HXLModule implements IModule {
 		return false;
 	}
 
+	// TODO: support TypeHere<T, T, ....>
 	public function execute(data:String):HOutput {
 		var res:HOutput = {success: false, data: ''};
 		var result = data;
@@ -84,7 +85,8 @@ class HXLModule implements IModule {
 						&& ((result.charAt(end) >= '0' && result.charAt(end) <= '9')
 							|| (result.charAt(end) >= 'A' && result.charAt(end) <= 'Z')
 							|| (result.charAt(end) >= 'a' && result.charAt(end) <= 'z')
-							|| result.charAt(end) == '_')) {
+							|| result.charAt(end) == '_')
+						|| result.charAt(end) == ';') {
 						end++;
 					}
 
@@ -145,14 +147,28 @@ class HXLModule implements IModule {
 		return res;
 	}
 
-	public function init(codeBase:Array<String>):IModule {
-		for (sourceFile in codeBase) {
-			var content:String = File.getContent(sourceFile);
+	static function getBeforeBracket(s:String):String {
+		var i = s.indexOf("<");
+		if (i == -1)
+			return s;
+		return s.substr(0, i);
+	}
 
-			// match keyword, space, then capture the following alphanumeric word
-			var regex = ~/\b(?:typedef|enum|class|interface)\s+([A-Za-z0-9<>()]+)/g;
-			if (regex.match(content))
-				types.push(regex.matched(1)); // captured name
+	public function init(codeBase:Array<String>, verbose:Bool = false):IModule {
+		for (sourceFile in codeBase) {
+			if (sourceFile.endsWith('.hxl') || sourceFile.endsWith('.hx')) {
+				Sys.println('Searching for types in $sourceFile');
+				var content:String = File.getContent(sourceFile);
+
+				// match keyword, space, then capture the following alphanumeric word
+				var regex = ~/\b(?:typedef|enum|class|interface)\s+([A-Za-z0-9<>()]+)/g;
+				if (regex.match(content)) {
+					var type = regex.matched(1); // captured name
+					if (type.charAt(0).toUpperCase() == type.charAt(0))
+						if (!types.contains(type))
+							types.push(getBeforeBracket(type));
+				}
+			}
 		}
 		return this;
 	}
