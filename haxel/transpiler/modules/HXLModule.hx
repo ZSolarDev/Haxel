@@ -15,6 +15,7 @@ class HXLModule implements IModule {
 		'bool',
 		'array',
 		'void',
+		'obj',
 		'null', // like null<type>
 		'dynamic'
 	];
@@ -52,7 +53,6 @@ class HXLModule implements IModule {
 		return false;
 	}
 
-	// TODO: support TypeHere<T, T, ....>
 	public function execute(data:String):HOutput {
 		var res:HOutput = {success: false, data: ''};
 		var result = data;
@@ -79,6 +79,46 @@ class HXLModule implements IModule {
 				}
 
 				var start = pos + type.length;
+
+				// generics
+				var fullType = type;
+				if (start < result.length && result.charAt(start) == '<') {
+					var angleCount = 0;
+					var genStart = start;
+					while (start < result.length) {
+						var c = result.charAt(start);
+						if (c == '<')
+							angleCount++;
+						else if (c == '>')
+							angleCount--;
+
+						start++;
+
+						if (angleCount == 0)
+							break; // we closed all nested generics
+					}
+					fullType = result.substring(pos, start); // include the entire nested generic
+				}
+				// objects
+				if (start < result.length && result.charAt(start) == '{') {
+					var angleCount = 0;
+					var genStart = start;
+					while (start < result.length) {
+						var c = result.charAt(start);
+						if (c == '{')
+							angleCount++;
+						else if (c == '}')
+							angleCount--;
+
+						start++;
+
+						if (angleCount == 0)
+							break;
+					}
+					fullType = result.substring(pos, start);
+					fullType = fullType.substring(3, fullType.length);
+				}
+
 				if (start < result.length && result.charAt(start) == ' ') {
 					var end = start + 1;
 
@@ -117,7 +157,7 @@ class HXLModule implements IModule {
 					while (searchPos >= 0) {
 						var ch = result.charAt(searchPos);
 						if (ch == ')')
-							break; // we passed the param list
+							break;
 						if (ch == '(') {
 							insideParams = true;
 							break;
@@ -126,13 +166,39 @@ class HXLModule implements IModule {
 					}
 
 					if (insideParams) {
-						result = result.substring(0, pos) + alphanumericPart + ":" + convertTypes(type) + result.substring(pos + (end - pos));
+						result = result.substring(0, pos) + alphanumericPart + ":" + convertTypes(fullType) + result.substring(pos + (end - pos));
 						pos = start + 1;
 						continue;
 					}
+
 					if (valid) {
 						var isFunction = alphanumericPart.indexOf('(') != -1;
-						var declaration:String = isFunction ? '${modifier}function $alphanumericPart:${convertTypes(type)}' : '${modifier}var ${convertVariableDecl(type + ' ' + alphanumericPart)}';
+						var isParam = false;
+						if (!isFunction) {
+							var backPos = pos - 1;
+							var lookForObj = false;
+							while (backPos >= 0) {
+								var c = result.charAt(backPos);
+								if (c == ' ' || c == '\t' || c == '\n') {
+									backPos--; // skip blanks
+									continue;
+								}
+								if (lookForObj) {
+									if ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == '_' || c == ':')
+										isParam = true;
+								} else {
+									if (c == ';')
+										isParam = true;
+									if (c == '{') {
+										lookForObj = true;
+										backPos--;
+										continue;
+									}
+								}
+								break;
+							}
+						}
+						var declaration:String = isFunction ? '${modifier}function $alphanumericPart:${convertTypes(fullType)}' : isParam ? '$alphanumericPart:${convertTypes(fullType)}' : '${modifier}var ${convertVariableDecl(fullType + ' ' + alphanumericPart)}';
 						var cutStart = modifier != "" ? (pos - modifier.length) : pos;
 						result = result.substring(0, cutStart) + declaration + result.substring(pos + (end - pos));
 					}
@@ -201,11 +267,15 @@ class HXLModule implements IModule {
 
 				// match keyword, space, then capture the following alphanumeric word
 				var regex = ~/\b(?:typedef|enum|class|interface)\s+([A-Za-z0-9<>()]+)/g;
-				if (regex.match(content)) {
+				var lastPos = 0;
+
+				while (regex.matchSub(content, lastPos)) {
 					var type = regex.matched(1); // captured name
-					if (type.charAt(0).toUpperCase() == type.charAt(0))
-						if (!types.contains(type))
-							types.push(getBeforeBracket(type));
+					var pos = regex.matchedPos();
+
+					if (type.charAt(0).toUpperCase() == type.charAt(0) && !types.contains(type))
+						types.push(getBeforeBracket(type));
+					lastPos = pos.pos + pos.len;
 				}
 			}
 		}
