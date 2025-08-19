@@ -10,15 +10,17 @@ class PlayState extends FlxState
 	override public void create()
 	{
 		super.create();
-        obj{int wowie; float wowie2} coolStructure = {wowie: 1, wowie2: 2.0};
-        // TODO: support this
-        // Void->Float coolCallback = () -> {
-        //     return 1.0;
-        // };
+        auto coolStructure = {wowie: 1, wowie2: {wowie: 2, wowie2: {wowie: 3, wowie2: 4}}};
+        trace(coolStructure);
+
+        obj{int wowie; obj{int wowie; obj{int wowie; float wowie2} wowie2} wowie2} evenCoolerStructure = {wowie: 1, wowie2: {wowie: 2, wowie2: {wowie: 3, wowie2: 4}}};
+        trace(evenCoolerStructure);
+        
         FlxTypedGroup<FlxSprite> grpTest = new FlxTypedGroup<FlxSprite>();
         add(grpTest);
         FlxSprite spr = new FlxSprite(0, 0).makeGraphic(200, 200, 0xFFFF0000);
-        grpTest.add(spr);
+        //grpTest.add(spr);
+        add(spr);
 	}
 
 	override public void update(float elapsed)

@@ -8,17 +8,7 @@ using StringTools;
 
 // this was worse than the compiler...
 class HXLModule implements IModule {
-	public var types:Array<String> = [
-		'float',
-		'int',
-		'string',
-		'bool',
-		'array',
-		'void',
-		'obj',
-		'null', // like null<type>
-		'dynamic'
-	];
+	public var types:Array<String> = ['float', 'int', 'string', 'bool', 'array', 'void', 'obj', 'auto', 'dynamic'];
 
 	var modifiers = [
 		'public',
@@ -69,11 +59,11 @@ class HXLModule implements IModule {
 					continue;
 				}
 
-				var modifier = "";
+				var modifier = '';
 				var beforeChunk = result.substring(cast Math.max(0, pos - 20), pos).rtrim();
 				for (m in modifiers) {
 					if (beforeChunk.endsWith(m)) {
-						modifier = m + " ";
+						modifier = m + ' ';
 						break;
 					}
 				}
@@ -99,6 +89,7 @@ class HXLModule implements IModule {
 					}
 					fullType = result.substring(pos, start); // include the entire nested generic
 				}
+
 				// objects
 				if (start < result.length && result.charAt(start) == '{') {
 					var angleCount = 0;
@@ -166,14 +157,14 @@ class HXLModule implements IModule {
 					}
 
 					if (insideParams) {
-						result = result.substring(0, pos) + alphanumericPart + ":" + convertTypes(fullType) + result.substring(pos + (end - pos));
+						result = result.substring(0, pos) + alphanumericPart + ':' + convertTypes(fullType) + result.substring(pos + (end - pos));
 						pos = start + 1;
 						continue;
 					}
 
 					if (valid) {
 						var isFunction = alphanumericPart.indexOf('(') != -1;
-						var isParam = false;
+						var isBasicDecl = false;
 						if (!isFunction) {
 							var backPos = pos - 1;
 							var lookForObj = false;
@@ -185,10 +176,10 @@ class HXLModule implements IModule {
 								}
 								if (lookForObj) {
 									if ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == '_' || c == ':')
-										isParam = true;
+										isBasicDecl = true;
 								} else {
 									if (c == ';')
-										isParam = true;
+										isBasicDecl = true;
 									if (c == '{') {
 										lookForObj = true;
 										backPos--;
@@ -198,8 +189,8 @@ class HXLModule implements IModule {
 								break;
 							}
 						}
-						var declaration:String = isFunction ? '${modifier}function $alphanumericPart:${convertTypes(fullType)}' : isParam ? '$alphanumericPart:${convertTypes(fullType)}' : '${modifier}var ${convertVariableDecl(fullType + ' ' + alphanumericPart)}';
-						var cutStart = modifier != "" ? (pos - modifier.length) : pos;
+						var declaration:String = isFunction ? '${modifier}function $alphanumericPart:${convertTypes(fullType)}' : isBasicDecl ? '$alphanumericPart:${convertTypes(fullType)}' : '${modifier}var ${convertVariableDecl(fullType + ' ' + alphanumericPart)}';
+						var cutStart = modifier != '' ? (pos - modifier.length) : pos;
 						result = result.substring(0, cutStart) + declaration + result.substring(pos + (end - pos));
 					}
 				}
@@ -213,8 +204,97 @@ class HXLModule implements IModule {
 		return res;
 	}
 
+	function parseField(field:String):String {
+		field = field.trim();
+		if (field == "")
+			return "";
+
+		// case 1: already in "name:Type" form
+		if (field.indexOf(":") != -1 && !field.startsWith("obj{")) {
+			return field; // don't touch it
+		}
+
+		// case 2: nested struct
+		if (field.startsWith("obj{")) {
+			var spaceIndex = field.lastIndexOf(' ');
+			var nestedType = field.substr(0, spaceIndex);
+			var varName = field.substr(spaceIndex + 1);
+			return '${varName}:${convertInlineStructType(nestedType)}';
+		}
+
+		// case 3: normal "type name"
+		var spaceIndex = -1;
+		var depthAngles = 0;
+		var depthBraces = 0;
+
+		for (i in 0...field.length) {
+			var c = field.charAt(i);
+			switch (c) {
+				case '<':
+					depthAngles++;
+				case '>':
+					depthAngles--;
+				case '{':
+					depthBraces++;
+				case '}':
+					depthBraces--;
+				case ' ':
+					if (depthAngles == 0 && depthBraces == 0) {
+						spaceIndex = i;
+					}
+				default:
+			}
+		}
+
+		if (spaceIndex == -1) {
+			Sys.println('HXLTRANSPILER_ERROR: Could not parse field: $field');
+			Sys.exit(1);
+		}
+
+		var type = field.substr(0, spaceIndex);
+		var name = field.substr(spaceIndex + 1);
+		return '${name}:${convertTypes(type)}';
+	}
+
+	function splitFields(inner:String):Array<String> {
+		var fields = [];
+		var current = "";
+		var depthBraces = 0;
+		var depthAngles = 0;
+
+		for (i in 0...inner.length) {
+			var c = inner.charAt(i);
+			switch (c) {
+				case '{':
+					depthBraces++;
+					current += c;
+				case '}':
+					depthBraces--;
+					current += c;
+				case '<':
+					depthAngles++;
+					current += c;
+				case '>':
+					depthAngles--;
+					current += c;
+				case ';':
+					if (depthBraces == 0 && depthAngles == 0) {
+						fields.push(current.trim());
+						current = "";
+					} else {
+						current += c;
+					}
+				default:
+					current += c;
+			}
+		}
+		if (current.trim() != "")
+			fields.push(current.trim());
+		return fields;
+	}
+
 	static function getBeforeBracket(s:String):String {
-		var i = s.indexOf("<");
+		var i = s.indexOf('<');
 		if (i == -1)
 			return s;
 		return s.substr(0, i);
@@ -226,23 +306,23 @@ class HXLModule implements IModule {
 		var len = src.length;
 		while (i < len) {
 			var c = src.charAt(i);
-			if (c == "/" && i + 1 < len) {
+			if (c == '/' && i + 1 < len) {
 				var c2 = src.charAt(i + 1);
-				if (c2 == "/") {
+				if (c2 == '/') {
 					// line comment: skip until newline (but keep newline)
 					i += 2;
 					while (i < len && src.charAt(i) != '\n')
 						i++;
 					if (i < len) {
-						out.add("\n");
+						out.add('\n');
 						i++;
 					}
-				} else if (c2 == "*") {
+				} else if (c2 == '*') {
 					// block comment: advance until */; preserve newlines inside
 					i += 2;
 					while (i + 1 < len && !(src.charAt(i) == '*' && src.charAt(i + 1) == '/')) {
 						if (src.charAt(i) == '\n')
-							out.add("\n");
+							out.add('\n');
 						i++;
 					}
 					i += 2; // skip */
@@ -301,33 +381,46 @@ class HXLModule implements IModule {
 		else
 			typeStr = convertTypes(typeStr);
 
-		return '${varName}:${typeStr}';
+		return varName + (typeStr == '' ? '' : ':' + typeStr);
 	}
 
 	public function convertInlineStructType(typeStr:String):String {
 		var inner = typeStr.trim();
-		if (inner.startsWith('{') && inner.endsWith('}')) {
+
+		if (inner.startsWith('obj{'))
+			inner = inner.substring(3, inner.length);
+		if (inner.startsWith('{') && inner.endsWith('}'))
 			inner = inner.substring(1, inner.length - 1);
-		} else
-			return typeStr;
 
-		var fields = inner.split(';').map((field) -> {
-			return field.trim();
-		}).filter((f) -> {
-			return f != '';
-		});
+		var fields = [];
+		var current = '';
+		var depth = 0;
 
-		var convertedFields = fields.map((field) -> {
-			var parts = field.split(' ');
-			if (parts.length != 2)
-				return field; // fallback
+		for (char in 0...inner.length) {
+			var c = inner.charAt(char);
+			if (c == '{')
+				depth++;
+			if (c == '}')
+				depth--;
+			if (c == ';' && depth == 0) {
+				fields.push(current.trim());
+				current = '';
+			} else {
+				current += c;
+			}
+		}
+		if (current.trim() != '')
+			fields.push(current.trim());
 
-			var t = convertTypes(parts[0]);
-			var n = parts[1];
-			return '${n}:${t}';
-		});
+		var tParts = [];
 
-		return '{' + convertedFields.join(', ') + '}';
+		for (field in splitFields(inner)) {
+			var parsed = parseField(field);
+			if (parsed != "")
+				tParts.push(parsed);
+		}
+
+		return '{${tParts.join(', ')}}';
 	}
 
 	public function convertTypes(type:String = 'array<array<string>>') {
@@ -335,6 +428,7 @@ class HXLModule implements IModule {
 
 		finalType = finalType.replace('float', 'Float');
 		finalType = finalType.replace('int', 'Int');
+		finalType = finalType.replace('auto', '');
 		finalType = finalType.replace('string', 'String');
 		finalType = finalType.replace('array', 'Array');
 		finalType = finalType.replace('null', 'Null');
