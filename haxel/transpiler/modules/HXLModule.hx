@@ -49,8 +49,9 @@ class HXLModule implements IModule {
 
 		for (type in types) {
 			var pos = 0;
-			while (pos < result.length) {
-				pos = result.indexOf(type, pos);
+			var regex = new EReg('\\b' + type + '\\b', 'g');
+			while (regex.matchSub(result, pos)) {
+				pos = regex.matchedPos().pos;
 				if (pos == -1)
 					break;
 
@@ -120,6 +121,9 @@ class HXLModule implements IModule {
 							|| result.charAt(end) == '_')) {
 						end++;
 					}
+					while (end < result.length && result.isSpace(end)) {
+						end++;
+					}
 
 					if (end < result.length && result.charAt(end) == '(') {
 						var parenCount = 1;
@@ -157,7 +161,7 @@ class HXLModule implements IModule {
 					}
 
 					if (insideParams) {
-						result = result.substring(0, pos) + alphanumericPart + ':' + convertTypes(fullType) + result.substring(pos + (end - pos));
+						result = result.substring(0, pos) + alphanumericPart + ':' + convertTypes(fullType) + result.substring(end);
 						pos = start + 1;
 						continue;
 					}
@@ -189,9 +193,17 @@ class HXLModule implements IModule {
 								break;
 							}
 						}
+						// before converting types/variables
+						var beforePos = result.substring(cast Math.max(0, pos - 10), pos);
+						var classCheck = ~/(\bclass\b|\binterface\b|\btypedef\b)/;
+						if (classCheck.match(beforePos)) {
+							pos += type.length;
+							continue;
+						}
+
 						var declaration:String = isFunction ? '${modifier}function $alphanumericPart:${convertTypes(fullType)}' : isBasicDecl ? '$alphanumericPart:${convertTypes(fullType)}' : '${modifier}var ${convertVariableDecl(fullType + ' ' + alphanumericPart)}';
 						var cutStart = modifier != '' ? (pos - modifier.length) : pos;
-						result = result.substring(0, cutStart) + declaration + result.substring(pos + (end - pos));
+						result = result.substring(0, cutStart) + declaration + result.substring(end);
 					}
 				}
 
@@ -386,7 +398,7 @@ class HXLModule implements IModule {
 		if (trimmedDecl.contains(' = ')) {
 			var parts = trimmedDecl.split(' = ');
 			trimmedDecl = parts[0];
-			varValue = parts[1];
+			varValue = parts[1].trim();
 		}
 
 		var words = trimmedDecl.split(' ');
@@ -398,7 +410,7 @@ class HXLModule implements IModule {
 		else
 			typeStr = convertTypes(typeStr);
 
-		return varName + (typeStr == '' ? '' : ':' + typeStr);
+		return varName + (typeStr == '' ? '' : ':' + typeStr) + (varValue == '' ? '' : ' = ' + varValue);
 	}
 
 	public function convertInlineStructType(typeStr:String):String {
