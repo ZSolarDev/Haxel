@@ -74,10 +74,11 @@ class RGBATex {
 			var row:Array<RGBA> = [];
 			for (x in 0...width) {
 				var offset = (y * width + x) * 4;
-				var r = pixelBytes.get(offset);
+				var r = pixelBytes.get(offset + 2);
 				var g = pixelBytes.get(offset + 1);
-				var b = pixelBytes.get(offset + 2);
+				var b = pixelBytes.get(offset);
 				var a = pixelBytes.get(offset + 3);
+
 				row.push(new RGBA(r, g, b, a));
 			}
 			pixels.push(row);

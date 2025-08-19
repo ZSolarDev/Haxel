@@ -74,9 +74,9 @@ class RGBTex {
 			var row:Array<RGB> = [];
 			for (x in 0...width) {
 				var offset = (y * width + x) * 4;
-				var r = pixelBytes.get(offset);
+				var r = pixelBytes.get(offset + 2);
 				var g = pixelBytes.get(offset + 1);
-				var b = pixelBytes.get(offset + 2);
+				var b = pixelBytes.get(offset);
 				row.push(new RGB(r, g, b));
 			}
 			pixels.push(row);

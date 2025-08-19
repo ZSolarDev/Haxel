@@ -13,11 +13,11 @@ class PlayState extends FlxState
 		super.create();
         FlxSprite spr = new FlxSprite(0, 0).makeGraphic(387, 389, 0xff000000);
         add(spr);
-        RGBATex tex = RGBATex.fromPng('assets/test.png');
+        RGBATex tex = RGBATex.fromPng('assets/breh.png');
         for (y in 0...tex.height) {
             for (x in 0...tex.width) {
                 var pixel = tex.getPixel(x, y);
-                spr.pixels.setPixel32(x, y, FlxColor.fromRGBA(pixel.r, pixel.g, pixel.b, pixel.a));
+                spr.pixels.setPixel32(x, y, FlxColor.fromRGB(pixel.r, pixel.g, pixel.b, pixel.a));
             }
         }
 	}
