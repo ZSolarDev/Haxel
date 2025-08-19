@@ -338,25 +338,42 @@ class HXLModule implements IModule {
 		return out.toString();
 	}
 
-	public function init(codeBase:Array<String>, verbose:Verbose):IModule {
+	public function init(codeBase:Array<String>, verbose:Verbose, project:HaxelProject):IModule {
+		inline function match(content) {
+			// match keyword, space, then capture the following alphanumeric word
+			var regex = ~/\b(?:typedef|enum|class|interface)\s+([A-Za-z0-9<>()]+)/g;
+			var lastPos = 0;
+
+			while (regex.matchSub(content, lastPos)) {
+				var type = regex.matched(1); // captured name
+				var pos = regex.matchedPos();
+
+				if (type.charAt(0).toUpperCase() == type.charAt(0) && !types.contains(type))
+					types.push(getBeforeBracket(type));
+				lastPos = pos.pos + pos.len;
+			}
+		}
 		for (sourceFile in codeBase) {
 			if (sourceFile.endsWith('.hxl') || sourceFile.endsWith('.hx')) {
 				if (verbose.plus)
 					Sys.println('Searching for types in $sourceFile');
 				var content:String = stripComments(File.getContent(sourceFile));
 
-				// match keyword, space, then capture the following alphanumeric word
-				var regex = ~/\b(?:typedef|enum|class|interface)\s+([A-Za-z0-9<>()]+)/g;
-				var lastPos = 0;
-
-				while (regex.matchSub(content, lastPos)) {
-					var type = regex.matched(1); // captured name
-					var pos = regex.matchedPos();
-
-					if (type.charAt(0).toUpperCase() == type.charAt(0) && !types.contains(type))
-						types.push(getBeforeBracket(type));
-					lastPos = pos.pos + pos.len;
-				}
+				match(content);
+			}
+		}
+		if (project.includesHaxelStandardLibrary) {
+			for (hxPackage in HaxelStandardLibrary.basehxlstd) {
+				var content = HXLResources.getString(hxPackage);
+				var finalHX = content.replace('haxel.hxlstd', 'hxlstd');
+				match(finalHX);
+			}
+		}
+		if (project.includesExtendedHaxelStandardLibrary) {
+			for (hxPackage in HaxelStandardLibrary.exthxlstd) {
+				var content = HXLResources.getString(hxPackage);
+				var finalHX = content.replace('haxel.hxlstd', 'hxlstd');
+				match(finalHX);
 			}
 		}
 		return this;

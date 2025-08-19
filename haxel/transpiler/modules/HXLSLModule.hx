@@ -14,6 +14,6 @@ class HXLSLModule implements IModule {
 		return res;
 	}
 
-	public function init(codeBase:Array<String>, verbose:Verbose):IModule
+	public function init(codeBase:Array<String>, verbose:Verbose, project:HaxelProject):IModule
 		return this;
 }

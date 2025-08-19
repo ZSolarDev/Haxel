@@ -54,7 +54,7 @@ class HaxelCompiler {
 				var libPath = output.split('\n').shift().trim();
 				libFiles = libFiles.concat(recursiveDirRead(libPath));
 			}
-			HaxelTranspiler.initModule('hxl', libFiles, verbose);
+			HaxelTranspiler.initModule('hxl', libFiles, verbose, project);
 
 			Sys.println('${verbose.plus ? '\n' : ''}Modules initialized! Transpiling source code...${verbose.enabled ? '\n' : ''}');
 			for (file in sourceFiles) {
