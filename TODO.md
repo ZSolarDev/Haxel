@@ -1,0 +1,44 @@
+## Haxel TODO
+
+- [X] hxlp parser
+- [X] .hxl transpiler
+- [ ] .hxlsl transpiler
+- [X] Injector
+- [ ] HXLSTD
+    - [ ] Non-Extern
+        - [X] display
+            - [X] colors
+            - [X] textures
+        - [ ] geom
+            - [ ] shapes
+                - [ ] polygons
+                - [ ] Circle
+                - [ ] Splines
+            - [ ] collision
+                - [ ] polygon -> polygon
+                - [ ] polygon -> spline(polygonized, I am NOT making spline intersection tests.)
+                - [ ] circle -> circle
+                - [ ] circle -> polygon
+                - [ ] circle -> spline(polygonized)
+                - [ ] spline(polygonized) -> spline(polygonized)
+        - [X] math
+            - [X] math
+            - [X] vectors
+        - [ ] noise
+        - [ ] display3d
+            - [ ] projection
+            - [ ] camera
+            - [X] 3D textures
+    - [ ] Extern
+        - [ ] display3d
+            - [ ] raytracing
+        - [ ] compute
+            - [ ] generally working
+            - [ ] default cpu -> gpu types
+            - [ ] easy dynamic buffers
+            - [ ] custom gpu types
+            - [ ] custom cpu -> gpu types
+            - [ ] shader libraries
+- [X] Compiler
+- [ ] Full command line interface
+- [ ] .hxllib packaged library

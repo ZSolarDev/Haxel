@@ -55,22 +55,22 @@ class HaxelStandardLibrary {
 		'hxlstd.compute.types.RGBTex',
 		'hxlstd.compute.types.RGBATex',
 		'hxlstd.compute.types.FloatTex',
-		'hxlstd.compute.types.3DRGBTex',
-		'hxlstd.compute.types.3DRGBATex',
-		'hxlstd.compute.types.3DFloatTex',
+		'hxlstd.compute.types.RGBTex3D',
+		'hxlstd.compute.types.RGBATex3D',
+		'hxlstd.compute.types.FloatTex3D',
 	];
 
 	public static var exthxlstd:Array<String> = [
 		/* --------------     DISPLAY3D     --------------- */
-		'hxlstd.display3d.3DRGBTex',
-		'hxlstd.display3d.3DRGBATex',
-		'hxlstd.display3d.3DFloatTex',
+		'hxlstd.display3d.RGBTex3D',
+		'hxlstd.display3d.RGBATex3D',
+		'hxlstd.display3d.FloatTex3D',
 		'hxlstd.display3d.projection.IProjector',
 		'hxlstd.display3d.projection.PerspectiveProjector',
 		'hxlstd.display3d.projection.OrthographicProjector',
 		'hxlstd.display3d.raytracing.Ray',
-		'hxlstd.display3d.FrustumCuller',
-		'hxlstd.display3d.BasicPlaneClipper',
+		'hxlstd.display3d.camera.FrustumCuller',
+		'hxlstd.display3d.camera.BasicPlaneClipper',
 		'hxlstd.display3d.raytracing.Scene',
 		/* ----------------      NOISE      --------------- */
 		'hxlstd.noise.NormalNoise',

@@ -30,19 +30,19 @@ class RGBTex {
 
 	public function blankPixels() {
 		pixels = [];
-		for (_ in 0...height) {
-			var row = new Array<RGB>();
-			for (_ in 0...width)
-				row.push(new RGB(0, 0, 0));
-			pixels.push(row);
+		for (_ in 0...width) {
+			var column = new Array<RGB>();
+			for (_ in 0...height)
+				column.push(new RGB(0, 0, 0));
+			pixels.push(column);
 		}
 	}
 
 	public function getPixel(x:Int, y:Int):RGB
-		return pixels[y][x];
+		return pixels[x][y];
 
 	public function setPixel(x:Int, y:Int, rgb:RGB)
-		pixels[y][x] = rgb;
+		pixels[x][y] = rgb;
 
 	public function resize(width:Int, height:Int) {
 		_width = width;
@@ -61,7 +61,7 @@ class RGBTex {
 	}
 
 	public function toString():String
-		return 'RGBTex(' + width + ', ' + height + ')';
+		return 'RGBTex($width, $height)';
 
 	public static function fromPng(path:String):RGBTex {
 		var bytes = File.read(path, true);
@@ -70,16 +70,17 @@ class RGBTex {
 		var width = Tools.getHeader(data).width;
 		var height = Tools.getHeader(data).height;
 		var pixels:Array<Array<RGB>> = [];
-		for (y in 0...height) {
-			var row:Array<RGB> = [];
-			for (x in 0...width) {
+		for (x in 0...width) {
+			var column:Array<RGB> = [];
+			for (y in 0...height) {
 				var offset = (y * width + x) * 4;
 				var r = pixelBytes.get(offset + 2);
 				var g = pixelBytes.get(offset + 1);
 				var b = pixelBytes.get(offset);
-				row.push(new RGB(r, g, b));
+
+				column.push(new RGB(r, g, b));
 			}
-			pixels.push(row);
+			pixels.push(column);
 		}
 		return new RGBTex(width, height, pixels);
 	}

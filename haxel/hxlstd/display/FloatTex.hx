@@ -30,19 +30,19 @@ class FloatTex {
 
 	public function blankPixels() {
 		pixels = [];
-		for (_ in 0...height) {
-			var row = new Array<FloatColor>();
-			for (_ in 0...width)
-				row.push(new FloatColor(0, 0, 0, 0));
-			pixels.push(row);
+		for (_ in 0...width) {
+			var column = new Array<FloatColor>();
+			for (_ in 0...height)
+				column.push(new FloatColor(0, 0, 0, 0));
+			pixels.push(column);
 		}
 	}
 
 	public function getPixel(x:Int, y:Int):FloatColor
-		return pixels[y][x];
+		return pixels[x][y];
 
 	public function setPixel(x:Int, y:Int, color:FloatColor)
-		pixels[y][x] = color;
+		pixels[x][y] = color;
 
 	public function resize(width:Int, height:Int) {
 		_width = width;
@@ -61,7 +61,7 @@ class FloatTex {
 	}
 
 	public function toString():String
-		return 'FloatTex(' + width + ', ' + height + ')';
+		return 'FloatTex($width, $height)';
 
 	public static function fromPng(path:String):FloatTex {
 		var bytes = File.read(path, true);
@@ -70,17 +70,18 @@ class FloatTex {
 		var width = Tools.getHeader(data).width;
 		var height = Tools.getHeader(data).height;
 		var pixels:Array<Array<FloatColor>> = [];
-		for (y in 0...height) {
-			var row:Array<FloatColor> = [];
-			for (x in 0...width) {
+		for (x in 0...width) {
+			var column:Array<FloatColor> = [];
+			for (y in 0...height) {
 				var offset = (y * width + x) * 4;
 				var r = pixelBytes.get(offset + 2);
 				var g = pixelBytes.get(offset + 1);
 				var b = pixelBytes.get(offset);
 				var a = pixelBytes.get(offset + 3);
-				row.push(new FloatColor(r / 255, g / 255, b / 255, a / 255));
+
+				column.push(new FloatColor(r / 255, g / 255, b / 255, a / 255));
 			}
-			pixels.push(row);
+			pixels.push(column);
 		}
 		return new FloatTex(width, height, pixels);
 	}
