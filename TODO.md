@@ -1,8 +1,9 @@
 ## Haxel TODO
 
 - [X] hxlp parser
-- [X] .hxl transpiler
-- [ ] .hxlsl transpiler
+- [ ] Transpiler
+    - [X] .hxl transpiler
+    - [ ] .hxlsl transpiler (ughh this is gonna be such a pain..)
 - [X] Injector
 - [ ] HXLSTD
     - [ ] Non-Extern
@@ -13,7 +14,7 @@
             - [ ] shapes
                 - [ ] polygons
                 - [ ] Circle
-                - [ ] Splines
+                - [ ] Splines (...why did i decide i was gonna add these...)
             - [ ] collision
                 - [ ] polygon -> polygon
                 - [ ] polygon -> spline(polygonized, I am NOT making spline intersection tests.)
