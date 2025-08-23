@@ -2,6 +2,7 @@
 --interp
 --library format
 
+--resource libs/haxelraytracing.hdll@HaxelRaytracing.hdll
 # Why me. this is literally the equivilant of a DEATH SENTANCE.
 --resource haxel/hxlstd/HXLStd.hx@hxlstd.HXLStd
 --resource haxel/hxlstd/display/RGB.hx@hxlstd.display.RGB

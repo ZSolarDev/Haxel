@@ -8,11 +8,16 @@ class HaxelPostTranspiler {
 	public static function compileProject(project:HaxelProject, projectPath:String, transpiledPath:String, outputPath:String, test:Bool = false,
 			verbose:Verbose):HOutput {
 		var output:HOutput = {success: false, data: ''};
-		var output = HXInjector.injectToSource('hxlstd', '$outputPath/transpiled/source', project, verbose);
+		output = HXInjector.injectToSource('hxlstd', '$outputPath/transpiled/source', project, verbose);
 		if (output.success) {
-			Sys.println('${verbose.plus ? '\n' : ''}Successfully injected the Haxel Standard Library! Compiling transpiled files...');
-			output = HaxelTranspiledCompiler.compileProject(project, projectPath, transpiledPath, outputPath, test, verbose);
-			return output;
+			Sys.println('${verbose.plus ? '\n' : ''}Successfully injected the Haxel Standard Library! Injecting Haxel DLLs...');
+			output = HXInjector.injectToSource('hxldll', '$outputPath/transpiled/source', project, verbose);
+			if (output.success) {
+				Sys.println('${verbose.plus ? '\n' : ''}Successfully injected Haxel DLLs! Compiling transpiled files...');
+				output = HaxelTranspiledCompiler.compileProject(project, projectPath, transpiledPath, outputPath, test, verbose);
+				return output;
+			} else
+				return output;
 		} else
 			return output;
 	}

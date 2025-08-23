@@ -28,6 +28,15 @@ class HaxelTranspiledCompiler {
 								Sys.println("A Project.xml file wasn't found. Automatically creating one...");
 							if (!project.libraries.contains('flixel'))
 								project.libraries.push('flixel');
+							if (project.flixelOptions.targetOverride == ''
+								|| project.flixelOptions.targetOverride == 'hl'
+								|| project.flixelOptions.targetOverride == 'cpp'
+								|| project.flixelOptions.targetOverride == 'windows') {
+								var ext = project.flixelOptions.targetOverride == ''
+									|| project.flixelOptions.targetOverride == 'hl' ? 'h' : project.flixelOptions.targetOverride == 'cpp'
+										|| project.flixelOptions.targetOverride == 'windows' ? 'n' : '';
+								project.flixelOptions.pureInjections.push('<assets path="source/_HAXEL_RAYTRACING_/haxelraytracing.${ext}dll" rename="haxelraytracing.${ext}dll"/>');
+							}
 							projectXML = '
 <?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://lime.openfl.org/project/1.0.4" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -42,8 +51,7 @@ class HaxelTranspiledCompiler {
 							for (windowTag in project.flixelOptions.windowTags)
 								projectXML += '
     <window ${windowTag.replace("'", '"')} />';
-							if (project.copiedFolders.length > 0)
-								projectXML += '\n\n    <!-- _______________ Assets ______________ -->';
+							projectXML += '\n\n    <!-- _______________ Assets ______________ -->';
 							for (folder in project.copiedFolders)
 								projectXML += '
     <assets path="$folder" />';

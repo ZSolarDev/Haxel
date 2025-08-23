@@ -5,7 +5,7 @@ import haxel.Haxel.Verbose;
 import haxel.injector.injectors.*;
 
 class HXInjector {
-	static var injectors:Map<String, IInjector> = ['hxlstd' => new HXLSTDInjector()];
+	static var injectors:Map<String, IInjector> = ['hxlstd' => new HXLSTDInjector(), 'hxldll' => new HXLDLLInjector()];
 
 	public static function getInjector(injector:String):IInjector
 		return injectors.get(injector);

@@ -43,7 +43,6 @@ Commands:
 	}
 
 	static function buildProject(project:HaxelProject, hxlpPath:String, test:Bool = false, verbose:Verbose) {
-		// Placeholder for now
 		var realHxlpPath = './';
 		var segments = hxlpPath.split('/');
 		for (segmentID in 0...segments.length) {
@@ -61,7 +60,7 @@ Commands:
 			FileSystem.createDirectory(outputPath);
 
 		var result = HaxelCompiler.compileProject(project, sourcePath, outputPath, test, verbose);
-		if (!test)
+		if (!result.success || (result.success && !test))
 			Sys.println('\n${result.data}\n');
 		exit = true;
 	}
