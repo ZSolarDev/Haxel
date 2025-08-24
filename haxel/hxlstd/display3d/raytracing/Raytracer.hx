@@ -1,4 +1,3 @@
-#if hl
 package haxel.hxlstd.display3d.raytracing;
 
 import haxe.Json;
@@ -296,14 +295,42 @@ private class RaytracerExt {
 
 	public function traceRay(id:Int, ray:SimpleRay):TraceResult {
 		var result = Raytracing.trace_ray(id, ray);
+		if (result == null) { // error tracing ray
+			result = new TraceResult();
+			result.hit = false;
+			result.distance = 0;
+			result.geomID = 0;
+			result.primID = 0;
+		}
 		return result;
 	}
 }
 
+#if hl
 @:hlNative("haxelraytracing")
 @:noCompletion
 private class Raytracing {
 	public static function new_raytracer():Void {}
+
+	public static function dispose_raytracer(id:Int):Void {}
+
+	public static function build_bvh(id:Int):Void {}
+
+	public static function refit_bvh(id:Int):Void {}
+
+	public static function rebuild_bvh(id:Int):Void {}
+
+	public static function load_geometry(string:String, id:Int):Void {}
+
+	public static function trace_ray(id:Int, ray:SimpleRay):TraceResult
+		return null;
+}
+#else
+@:noCompletion
+private class Raytracing {
+	public static function new_raytracer():Void {
+		trace("Current compile target doesn't support raytracing! Use hl or cpp.");
+	}
 
 	public static function dispose_raytracer(id:Int):Void {}
 

@@ -1,1 +1,1 @@
-package haxel.hxlstd.camera.display3d;
+package haxel.hxlstd.display3d.camera;
