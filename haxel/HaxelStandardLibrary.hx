@@ -68,8 +68,6 @@ class HaxelStandardLibrary {
 		'hxlstd.display3d.projection.IProjector',
 		'hxlstd.display3d.projection.PerspectiveProjector',
 		'hxlstd.display3d.projection.OrthographicProjector',
-		'hxlstd.display3d.camera.FrustumCuller',
-		'hxlstd.display3d.camera.BasicPlaneClipper',
 		'hxlstd.display3d.raytracing.Raytracer',
 		/* ----------------      NOISE      --------------- */
 		'hxlstd.noise.NormalNoise',

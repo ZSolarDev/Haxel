@@ -26,13 +26,12 @@
             - [X] math
             - [X] vectors
         - [ ] noise
-        - [ ] display3d
-            - [ ] projection
-            - [ ] camera
+        - [X] display3d
+            - [X] projection
             - [X] 3D textures
     - [ ] Extern
-        - [ ] display3d
-            - [ ] raytracing
+        - [X] display3d
+            - [X] raytracing
         - [ ] compute
             - [ ] generally working
             - [ ] default cpu -> gpu types
